@@ -9,7 +9,7 @@ export class PortfolioGeneratorController {
 
   @Post()
   create(@Body() createPortfolioGeneratorDto: CreatePortfolioGeneratorDto) {
-    return this.portfolioGeneratorService.create();
+    return this.portfolioGeneratorService.createPortfolio();
   }
 
   
