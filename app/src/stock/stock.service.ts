@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { StockPriceDto } from './dtos/create-stockPrice.dto';
 import { ApiErrorInterFace } from 'src/Interfaces/error.interface';
 import { ParamsForEachStockApi } from 'src/Interfaces/stock.interface';
-import { fillAllDateWithData } from 'src/Helpers/date.helper';
+import { fillAllDateWithData, stockDataFormat } from 'src/Helpers/app.helper';
 
 
 @Injectable()
@@ -34,11 +34,7 @@ export class StockService {
           }),
         ),
     )
-      .then(({ data }) => {
-        data.Data = JSON.parse(data.Data);
-        data.code = parseInt(params.scripcode);
-        return data;
-      })
+      .then(({ data }) => stockDataFormat(data,params))
       .then((stockPriceDto: StockPriceDto) => {
         const filledData = fillAllDateWithData(stockPriceDto,params)
         stockPriceDto.Data = filledData;
@@ -58,7 +54,6 @@ export class StockService {
         });
       })
       .catch((err) => {
-        console.log(err);
         return {
           status: 'error',
           errorCode: err.errno ? err.errno : 403,
