@@ -7,6 +7,6 @@ export class AppController {
 
   @Post()
   getHello(): any {
-    return this.appService.getHello();
+    return this.appService.updateStocks();
   }
 }
