@@ -42,10 +42,10 @@ export class StockService {
       })
       .then((stockPriceDto: StockPriceDto) => {
         return this.StockPriceModel.findOneAndUpdate(
-          { code: params.scripcode },
+          { scripcode: params.scripcode },
           stockPriceDto,
         ).then((data) => {
-          if (data && data.code) {
+          if (data && data.scripcode) {
             return stockPriceDto;
           } else {
             const createdstock = new this.StockPriceModel(stockPriceDto);
@@ -58,6 +58,7 @@ export class StockService {
           status: 'error',
           errorCode: err.errno ? err.errno : 403,
           message: err.message,
+          scripcode:err?.scripcode
         };
       });
     return data;

@@ -33,7 +33,7 @@ export class StockPrice {
   HighVol: number;
 
   @Prop({unique:true,type: Number,required: true})
-  code: number;
+  scripcode: number;
 
   @Prop(Array<DataInterface>)
   Data: DataInterface[]

@@ -19,8 +19,7 @@ export const enumerateDaysBetweenDates =  (startDate, endDate)=>{
   let priceDataFlag = 0;
   if (stockPriceDto.Data && stockPriceDto.Data.length) {
     let modifiedData = allDate.map((thisDate) => {
-      let date = moment(stockPriceDto.Data[priceDataFlag].dttm).format('YYYY-MM-DD');
-      if (thisDate <= date) {
+      if (thisDate <= moment(new Date(stockPriceDto.Data[priceDataFlag].dttm)).format('YYYY-MM-DD')) {
         return {
           dttm: thisDate,
           vale1: stockPriceDto.Data[priceDataFlag].vale1,
@@ -45,12 +44,12 @@ export const enumerateDaysBetweenDates =  (startDate, endDate)=>{
     });
     return modifiedData;
   } else {
-    throw noDataError;
+    throw {...noDataError,scripcode:parseInt(params.scripcode)};
   }
 }
 
 export const setParams = (resetStockInput:ResetStockInterface)=>{
-  return resetStockInput.scripCodeArray.map((eachStock) => {
+  return  {paramsArray :resetStockInput.scripCodeArray.map((eachStock) => {
     return {
       scripcode: eachStock,
       flag: '1',
@@ -58,37 +57,40 @@ export const setParams = (resetStockInput:ResetStockInterface)=>{
       fromdate: resetStockInput.fromdate || '2013-01-01',
       todate: resetStockInput.todate || moment().format('YYYY-MM-DD'),
     };
-  });
+  }),
+  fromdate: resetStockInput.fromdate || '2013-01-01',
+  todate: resetStockInput.todate || moment().format('YYYY-MM-DD'),
+
+}
 }
 
 export const stockDataFormat = (data,params)=>{
   data.Data = JSON.parse(data.Data);
-  data.code = parseInt(params.scripcode);
+  data.scripcode = parseInt(params.scripcode);
   return data;
 }
-// export const resultValidation = (data)=>{
-//   const successStocks = []
-//   const failedStocks = []
+export const resultValidation = (data)=>{
+  const successStocks = []
+  const failedStocks = []
 
-//   data.map(eachOutput=>{
-//     console.log(eachOutput)
-//     if(eachOutput.code && eachOutput.Scripname){
-//       successStocks.push({code:eachOutput.code,scripname:eachOutput.Scripname})
-//     }
-//     else{
-//       failedStocks.push({code:eachOutput.code,scripname:eachOutput.Scripname})
-//     }
-//   })
-//   if(failedStocks.length==0){
-//     return {status:"sucess",successStocks:successStocks}
-//   }
-//   else if(successStocks.length>0){
-//     return {status:"partial-sucess",successStocks:successStocks,failedStocks:failedStocks}
-//   }
-//   else{
-//     return {status:"failure",failedStocks:failedStocks}
-//   }
-// }
+  data.map(eachOutput=>{
+    if(eachOutput.scripcode && eachOutput.Scripname){
+      successStocks.push(eachOutput.scripcode)
+    }
+    else{
+      failedStocks.push(eachOutput.scripcode)
+    }
+  })
+  if(failedStocks.length==0){
+    return {status:"sucess",successStocks:successStocks}
+  }
+  else if(successStocks.length>0){
+    return {status:"partial-sucess",successStocks:successStocks,failedStocks:failedStocks}
+  }
+  else{
+    return {status:"failure",failedStocks:failedStocks}
+  }
+}
 
 
 
@@ -97,8 +99,8 @@ export const parallelCompute =(array)=>{
 let parallelProcess = gpu
   .createKernel(function (array) {
     let id = this.thread.x;
-    return array[id][0]*array[id][1]
-// do your work here
+    return array[id][0]*array[id][1] // do your work here
+
   })
   .setOutput([array.length]);
 

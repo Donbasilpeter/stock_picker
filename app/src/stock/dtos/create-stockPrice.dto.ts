@@ -31,7 +31,7 @@ export class StockPriceDto {
   HighVol: number;
 
   @IsNumber()
-  code: number;
+  scripcode: number;
 
   @IsNotEmpty()
   Data: DataInterface[]
