@@ -17,7 +17,7 @@ export class StockPrice {
   @Prop()
   HighVal: number;
 
-  @Prop()
+  @Prop({unique:true,type: String,required: true})
   Scripname: string;
 
   @Prop()
@@ -31,6 +31,9 @@ export class StockPrice {
 
   @Prop()
   HighVol: number;
+
+  @Prop({unique:true,type: Number,required: true})
+  code: number;
 
   @Prop(Array<DataInterface>)
   Data: DataInterface[]

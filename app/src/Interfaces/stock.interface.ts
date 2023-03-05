@@ -4,3 +4,16 @@ export interface DataInterface {
   vole: number;
 }
 
+export interface ParamsForEachStockApi {
+  scripcode: string
+  flag: string,
+  fromdate: string,
+  todate: string,
+  seriesid: string,
+};
+export interface ResetStockInterface {
+  scripCodeArray: string[]
+  fromdate?: string,
+  todate?: string,
+};
+

@@ -1,15 +1,40 @@
-// import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty,IsDate,IsNumber } from 'class-validator';
+import { DataInterface } from 'src/Interfaces/stock.interface';
 
-// export class PostDto {
-//   @IsString()
-//   @IsNotEmpty()
-//   title: string;
+export class StockPriceDto {
 
-//   @IsString()
-//   @IsNotEmpty()
-//   content: string;
+  @IsDate()
+  CurrDate: Date;
 
-//   categories: string[];
-// }
+  @IsNumber()
+  PrevClose: number;
 
-// export default PostDto;
+  @IsNumber()
+  LowVal: number;
+
+  @IsNumber()
+  HighVal: number;
+
+  @IsString()
+  Scripname: string;
+
+  @IsNumber()
+  CurrVal: number;
+
+  @IsString()
+  CurrTime: string;
+
+  @IsNumber()
+  LowVol: number;
+
+  @IsNumber()
+  HighVol: number;
+
+  @IsNumber()
+  code: number;
+
+  @IsNotEmpty()
+  Data: DataInterface[]
+}
+
+export default StockPriceDto;
