@@ -1,6 +1,6 @@
 export interface DataInterface {
   dttm: Date;
-  vale1: number;
+  vale1:  number & Exclude<number, 0>
   vole: number;
 }
 

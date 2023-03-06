@@ -76,7 +76,10 @@ export const setParams = (resetStockInput: ResetStockInterface) => {
 
 export const stockDataFormat = (data, params) => {
   data.Data = JSON.parse(data.Data);
-  data.Data.map((eachValue) => (eachValue.vale1 = parseInt(eachValue.vale1)));
+  data.Data.map((eachValue) => {
+    (eachValue.vale1 = parseInt(eachValue.vale1))
+    if (eachValue.vale1 === 0) eachValue.vale1 = 1
+  });
   data.scripcode = parseInt(params.scripcode);
   return data;
 };
@@ -129,9 +132,10 @@ export const stockToPortfolio = (data) => {
   let arrayOfDailyChange = [];
 
   for (let i = 1; i < data.Data.length; i++) {
-    let dailyChange =
-      ((data.Data[i].vale1 - data.Data[i - 1].vale1) * 100) /
-      data.Data[i - 1].vale1;
+    let dailyChange = ((data.Data[i].vale1 - data.Data[i - 1].vale1) * 100) / data.Data[i - 1].vale1;
+    if(isNaN(dailyChange)){
+      console.log(dailyChange,data,data.Data[i - 1].vale1)
+    }
     dailySum = dailySum + dailyChange;
     Data.push({ dttm: data.Data[i].dttm, dailyChange: dailyChange });
     arrayOfDailyChange.push(dailyChange);

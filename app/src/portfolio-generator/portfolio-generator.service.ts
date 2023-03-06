@@ -38,7 +38,7 @@ export class PortfolioGeneratorService {
               portfolioOfOneStock,
               'dailyStandardDeviation',
             );
-            return portfolioOfOneStock.map((eachPortfolio: PortfolioDto) => {
+            return portfolioOfOneStock.map(async (eachPortfolio: PortfolioDto) => {
               eachPortfolio.NormalisedDailyMean =
                 (eachPortfolio.dailyMean - dailyMeanMin) /
                   (dailyMeanMax - dailyMeanMin) +
@@ -49,8 +49,14 @@ export class PortfolioGeneratorService {
                   (dailyStandardDeviationMax - dailyStandardDeviationMin) +
                 1;
               const createdstock = new this.PortfolioModel(eachPortfolio);
-              createdstock.save();
-              return eachPortfolio;
+              return await createdstock.save()
+              .then(data=>{
+                return data
+
+              })
+              .catch((err)=>{
+                throw { status: err };
+              })
             });
 
              
