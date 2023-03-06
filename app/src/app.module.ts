@@ -10,7 +10,7 @@ import { GlobalHttpModule } from './global.module';
 @Module({
   imports: [
     MongooseModule.forRoot(
-      'mongodb+srv://donbasilpeter:5FiuboLs3G5Nk0FH@cluster0.4un2gxl.mongodb.net/stock_list',
+      'mongodb://localhost:27017/stock_list',
     ),
     GlobalHttpModule,
     HttpModule,
