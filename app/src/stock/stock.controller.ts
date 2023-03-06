@@ -20,10 +20,12 @@ export class StockController {
     this.StockPriceModel.collection.drop();
     const { paramsArray, fromdate, todate } = setParams(resetStockInput);
     if (fromdate <= todate) {
+      let [count,total] = [0,paramsArray.length]
       const result = await Promise.all(
         paramsArray.map((eachStock, i) => {
           return this.stockService.createStocks(eachStock).then((data) => {
-            console.log(i);
+            count++
+            console.log(count*100/total +"% completed");
             return data;
           });
         }),
