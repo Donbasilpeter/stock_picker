@@ -1,21 +1,32 @@
-import {  IsNotEmpty } from 'class-validator';
+import {  IsNotEmpty,IsNumber,IsString } from 'class-validator';
 import { DataInterfacePortfolio } from 'src/Interfaces/stock.interface';
 
 export class PortfolioDto {
 
   @IsNotEmpty()
-  Scripname: string[];
+  @IsString()
+  Scripname: string;
 
   @IsNotEmpty()
-  scripcode: number[];
+  @IsNumber()
+  scripcode: number;
 
   @IsNotEmpty()
+  @IsNumber()
   dailyMean: number;
 
   @IsNotEmpty()
+  @IsNumber()
   dailyStandardDeviation: number;
 
+  @IsNumber()
+  NormalisedDailyMean: number;
+
+  @IsNumber()
+  NormalisedDailyStandardDeviation: number;
+
   @IsNotEmpty()
+  @IsNumber()
   cagr: number;
 
   @IsNotEmpty()

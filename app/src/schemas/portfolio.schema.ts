@@ -7,11 +7,11 @@ export type PortfolioDocument = HydratedDocument<Portfolio>;
 export class Portfolio {
 
 
-  @Prop({unique:true,type:[String],required: true})
-  Scripname: string[];
+  @Prop({unique:true,type:String,required: true})
+  Scripname: string;
 
-  @Prop({unique:true,type: [Number],required: true})
-  scripcode: number[];
+  @Prop({unique:true,type: Number,required: true})
+  scripcode: number;
 
   @Prop({unique:true,type: Number,required: true})
   dailyMean: number;
@@ -21,6 +21,12 @@ export class Portfolio {
   
   @Prop({unique:true,type: Number,required: true})
   cagr: number;
+
+  @Prop({unique:true,type: Number})
+  NormalisedDailyMean: number;
+
+  @Prop({unique:true,type: Number})
+  NormalisedDailyStandardDeviation: number;
 
   @Prop(Array<DataInterfacePortfolio>)
   Data: DataInterfacePortfolio[]
