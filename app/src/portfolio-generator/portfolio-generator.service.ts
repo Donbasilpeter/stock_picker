@@ -67,4 +67,13 @@ export class PortfolioGeneratorService {
         return err;
       });
   }
+
+  analyse(){
+    return this.StockPriceModel.find({})
+    .lean()
+    .then((normalizedStocks)=>{
+      console.log(normalizedStocks)
+      return normalizedStocks
+    })
+  }
 }

@@ -2,13 +2,19 @@ import { Controller, Post } from '@nestjs/common';
 import { PortfolioGeneratorService } from './portfolio-generator.service';
 
 
-@Controller('normalise-stocks')
+@Controller('portfolio')
 export class PortfolioGeneratorController {
   constructor(private readonly portfolioGeneratorService: PortfolioGeneratorService) {}
 
-  @Post()
+  @Post("/normalise-stocks")
   create() {
     return this.portfolioGeneratorService.createPortfolio();
+  }
+
+  @Post("/analyse")
+  analyse() {
+    return this.portfolioGeneratorService.analyse();
+
   }
 
   
