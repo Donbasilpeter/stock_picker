@@ -154,3 +154,11 @@ function dev(arr) {
       .reduce((acc, val) => acc + val, 0) / arr.length,
   );
 }
+
+
+export function getMin(data,key) {
+  return data.reduce((min, p) => p[key] < min ? p[key] : min, data[0][key]);
+}
+export function getMax(data,key) {
+  return data.reduce((max, p) => p[key] > max ? p[key] : max, data[0][key]);
+}
