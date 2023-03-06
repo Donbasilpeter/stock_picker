@@ -16,6 +16,7 @@ export class StockPriceDto {
   HighVal: number;
 
   @IsString()
+  @IsNotEmpty()
   Scripname: string;
 
   @IsNumber()
@@ -31,6 +32,7 @@ export class StockPriceDto {
   HighVol: number;
 
   @IsNumber()
+  @IsNotEmpty()
   scripcode: number;
 
   @IsNotEmpty()

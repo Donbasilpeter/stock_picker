@@ -35,7 +35,7 @@ export class StockPrice {
   @Prop({unique:true,type: Number,required: true})
   scripcode: number;
 
-  @Prop(Array<DataInterface>)
+  @Prop({type: Array<DataInterface>,required: true })
   Data: DataInterface[]
 }
 export const StockPriceSchema = SchemaFactory.createForClass(StockPrice);

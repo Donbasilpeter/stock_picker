@@ -13,22 +13,22 @@ export class Portfolio {
   @Prop({unique:true,type: Number,required: true})
   scripcode: number;
 
-  @Prop({unique:true,type: Number,required: true})
+  @Prop({type: Number,required: true})
   dailyMean: number;
 
-  @Prop({unique:true,type: Number,required: true})
+  @Prop({type: Number,required: true})
   dailyStandardDeviation: number;
   
-  @Prop({unique:true,type: Number,required: true})
+  @Prop({type: Number,required: true})
   cagr: number;
 
-  @Prop({unique:true,type: Number})
+  @Prop({type: Number,required: true})
   NormalisedDailyMean: number;
 
-  @Prop({unique:true,type: Number})
+  @Prop({type: Number,required: true})
   NormalisedDailyStandardDeviation: number;
 
-  @Prop(Array<DataInterfacePortfolio>)
+  @Prop({type: Array<DataInterfacePortfolio>,required: true })
   Data: DataInterfacePortfolio[]
 
 }

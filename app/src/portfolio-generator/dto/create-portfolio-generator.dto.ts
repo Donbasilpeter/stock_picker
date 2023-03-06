@@ -1,4 +1,4 @@
-import {  IsNotEmpty,IsNumber,IsString } from 'class-validator';
+import {  IsNotEmpty,IsNumber,IsString,IsArray } from 'class-validator';
 import { DataInterfacePortfolio } from 'src/Interfaces/stock.interface';
 
 export class PortfolioDto {
@@ -20,9 +20,11 @@ export class PortfolioDto {
   dailyStandardDeviation: number;
 
   @IsNumber()
+  @IsNotEmpty()
   NormalisedDailyMean: number;
 
   @IsNumber()
+  @IsNotEmpty()
   NormalisedDailyStandardDeviation: number;
 
   @IsNotEmpty()
@@ -30,6 +32,7 @@ export class PortfolioDto {
   cagr: number;
 
   @IsNotEmpty()
+  @IsArray()
   Data: DataInterfacePortfolio[]
 }
 

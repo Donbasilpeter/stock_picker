@@ -22,11 +22,10 @@ export class PortfolioGeneratorService {
         return this.StockPriceModel.find({})
           .lean()
           .then((allData) => {
-            return Promise.all(
-              allData.map((eachData) => {
+            return allData.map((eachData) => {
                 return stockToPortfolio(eachData);
-              }),
-            );
+              })
+            
           })
           .then((portfolioOfOneStock) => {
             let dailyMeanMin = getMin(portfolioOfOneStock, 'dailyMean');
