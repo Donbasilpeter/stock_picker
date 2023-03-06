@@ -28,7 +28,7 @@ export class StockController {
             console.log(count*100/total +"% completed");
             return data;
           });
-        }),
+        })
       );
       return resultValidation(result);
     } else {
