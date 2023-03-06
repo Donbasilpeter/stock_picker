@@ -133,9 +133,6 @@ export const stockToPortfolio = (data) => {
 
   for (let i = 1; i < data.Data.length; i++) {
     let dailyChange = ((data.Data[i].vale1 - data.Data[i - 1].vale1) * 100) / data.Data[i - 1].vale1;
-    if(isNaN(dailyChange)){
-      console.log(dailyChange,data,data.Data[i - 1].vale1)
-    }
     dailySum = dailySum + dailyChange;
     Data.push({ dttm: data.Data[i].dttm, dailyChange: dailyChange });
     arrayOfDailyChange.push(dailyChange);

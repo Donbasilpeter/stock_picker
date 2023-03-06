@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { StockPrice, StockPriceDocument } from '../schemas/StockPrice.schema';
 import { Portfolio, PortfolioDocument } from 'src/schemas/portfolio.schema';
 import PortfolioDto from './dto/create-portfolio-generator.dto';
-import { AnalysePortfolioInterface } from 'src/Interfaces/stock.interface';
+import { AnalysePortfolioByCutInterface, AnalysePortfolioInterface } from 'src/Interfaces/stock.interface';
 
 @Injectable()
 export class PortfolioGeneratorService {
@@ -99,7 +99,7 @@ export class PortfolioGeneratorService {
     })
   }
 
-  analyse(){
+  analyseBySortingSD(){
     return this.PortfolioModel.find({})
     .lean()
     .then((normalizedStocks)=>{
@@ -112,6 +112,33 @@ export class PortfolioGeneratorService {
         return 0;
       })
       // .slice(0, pfSize)
+      return result
+    })
+    .catch((err)=>{
+      console.log(err)
+      return(err)
+    })
+  }
+  analyseBySortAndCut({SDcut = 1.5,CAGRcut =25}:AnalysePortfolioByCutInterface){
+    return this.PortfolioModel.find({})
+    .lean()
+    .then((normalizedStocks)=>{
+      let result = normalizedStocks
+      .filter((eachStock)=>{
+        return eachStock.dailyStandardDeviation < SDcut
+      })
+      .filter((eachStock)=>{
+        return eachStock.cagr > CAGRcut
+      })
+      .sort(function(a, b) {
+        var keyA = a["dailyStandardDeviation"],
+          keyB = b["dailyStandardDeviation"];
+        if (keyA < keyB) return -1;
+        if (keyA > keyB) return 1;
+        return 0;
+      })
+
+
       return result
     })
     .catch((err)=>{

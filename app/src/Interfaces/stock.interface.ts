@@ -26,3 +26,8 @@ export interface AnalysePortfolioInterface {
   coefficent : number,
   pfSize : number
 }
+export interface AnalysePortfolioByCutInterface {
+  SDcut : number,
+  CAGRcut : number
+}
+
