@@ -22,3 +22,7 @@ export interface ResetStockInterface {
   todate?: string,
 };
 
+export interface AnalysePortfolioInterface {
+  coefficent : number,
+  pfSize : number
+}

@@ -1,4 +1,5 @@
-import { Controller, Post } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
+import { AnalysePortfolioInterface } from 'src/Interfaces/stock.interface';
 import { PortfolioGeneratorService } from './portfolio-generator.service';
 
 
@@ -11,7 +12,12 @@ export class PortfolioGeneratorController {
     return this.portfolioGeneratorService.createPortfolio();
   }
 
-  @Post("/analyse")
+  @Post("/don-index")
+  analyseDonIntex(@Body() resetStockInput: AnalysePortfolioInterface) {
+    return this.portfolioGeneratorService.analyseDonIntex(resetStockInput);
+
+  }
+  @Post("analyse")
   analyse() {
     return this.portfolioGeneratorService.analyse();
 
