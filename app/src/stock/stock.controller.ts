@@ -21,16 +21,18 @@ export class StockController {
     const { paramsArray, fromdate, todate } = setParams(resetStockInput);
     if (fromdate <= todate) {
       let [count,total] = [0,paramsArray.length]
-      const result = await Promise.all(
+      return await Promise.all(
         paramsArray.map((eachStock, i) => {
           return this.stockService.createStocks(eachStock).then((data) => {
             count++
             console.log(count*100/total +"% completed");
             return data;
           });
-        })
-      );
-      return resultValidation(result);
+        }),
+      ).then((result)=>{
+        return resultValidation(result);
+      });
+     
     } else {
       return DateValidationError;
     }
