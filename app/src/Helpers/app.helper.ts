@@ -84,7 +84,7 @@ export const resultValidation = (data) => {
   const failedStocks = [];
 
   data.map((eachOutput) => {
-    if (eachOutput.scripcode && eachOutput.Scripname) {
+    if (eachOutput.scripcode && eachOutput.Scripname && eachOutput.Data) {
       successStocks.push(eachOutput.scripcode);
     } else {
       failedStocks.push(eachOutput.scripcode);

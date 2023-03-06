@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { getMax, getMin, stockToPortfolio } from 'src/Helpers/app.helper';
+import { getMax, getMin, resultValidation, stockToPortfolio } from 'src/Helpers/app.helper';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { StockPrice, StockPriceDocument } from '../schemas/StockPrice.schema';
@@ -56,6 +56,7 @@ export class PortfolioGeneratorService {
 
              
           })
+          .then((normalisedStock)=>{return resultValidation(normalisedStock)})
           .catch((err) => {
             console.log(err);
             throw { status: err };
