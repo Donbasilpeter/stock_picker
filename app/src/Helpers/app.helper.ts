@@ -53,6 +53,7 @@ export const fillAllDateWithData = (
     });
     return modifiedData;
   } else {
+    console.log(noDataError)
     throw { ...noDataError, scripcode: parseInt(params.scripcode) };
   }
 };

@@ -30,6 +30,7 @@ export class StockService {
         .get(this.configService.get('bseBaseUrl'), { ...config, params })
         .pipe(
           catchError((error: AxiosError) => {
+            console.log(error)
             throw error;
           }),
         ),
@@ -54,6 +55,7 @@ export class StockService {
         });
       })
       .catch((err) => {
+        console.log(err)
         return {
           status: 'error',
           errorCode: err.errno ? err.errno : 403,

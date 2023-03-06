@@ -34,6 +34,7 @@ export class StockController {
       });
      
     } else {
+      console.log(DateValidationError)
       return DateValidationError;
     }
   }
