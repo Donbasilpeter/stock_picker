@@ -1,22 +1,38 @@
 import { Injectable } from '@nestjs/common';
-import { parallelCompute } from 'src/Helpers/app.helper';
-import { HttpService } from '@nestjs/axios';
+import { stockToPortfolio } from 'src/Helpers/app.helper';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { StockPrice, StockPriceDocument } from '../schemas/StockPrice.schema';
-import { ConfigService } from '@nestjs/config';
-
+import { Portfolio,PortfolioDocument } from 'src/schemas/portfolio.schema';
 
 @Injectable()
 export class PortfolioGeneratorService {
+  constructor(
+    @InjectModel(StockPrice.name)
+    private StockPriceModel: Model<StockPriceDocument>,
+    @InjectModel(Portfolio.name)
+    private PortfolioModel: Model<PortfolioDocument>,
+  ) {}
 
   createPortfolio() {
-    const array = [
-      [1, 2],
-      [4, 5],
-      [9, 13],
-    ];
-
-    return parallelCompute(array);
+     return this.PortfolioModel.collection.drop().then(
+      (()=>{
+        return this.StockPriceModel.find({}).lean()
+        .then((allData=>{
+          return  allData.map((eachData)=>{
+          const createdstock = new this.PortfolioModel(stockToPortfolio(eachData));
+          createdstock.save();
+          return createdstock.scripcode;
+          })
+    
+        }))
+        .catch((err) => {
+          console.log(err)
+          throw { status: err};
+        });
+      })
+    )
+    .then((data)=>data)
+    .catch((err=>{return err}))
   }
 }

@@ -4,6 +4,11 @@ export interface DataInterface {
   vole: number;
 }
 
+export interface DataInterfacePortfolio {
+  dttm: Date;
+  dailyChange: number;
+}
+
 export interface ParamsForEachStockApi {
   scripcode: string
   flag: string,

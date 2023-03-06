@@ -4,6 +4,7 @@ import { StockPrice, StockPriceSchema } from './schemas/StockPrice.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import config from './configuration'
+import { Portfolio, PortfolioSchema } from './schemas/portfolio.schema';
 
 @Global()
 @Module({
@@ -11,6 +12,9 @@ import config from './configuration'
     HttpModule,
     MongooseModule.forFeature([
       { name: StockPrice.name, schema: StockPriceSchema },
+    ]),
+    MongooseModule.forFeature([
+      { name: Portfolio.name, schema: PortfolioSchema },
     ]),
     ConfigModule.forRoot({
         isGlobal:true,
@@ -21,6 +25,9 @@ import config from './configuration'
     HttpModule,
     MongooseModule.forFeature([
       { name: StockPrice.name, schema: StockPriceSchema },
+    ]),
+    MongooseModule.forFeature([
+      { name: Portfolio.name, schema: PortfolioSchema },
     ]),
     ConfigModule.forRoot({
         isGlobal:true,
