@@ -149,13 +149,14 @@ export const stockToNormalisedStock = (data) => {
   output['Data'] = Data;
   output['dailyStandardDeviation'] = dev(arrayOfDailyChange);
   output['dailyMean'] = dailySum / Data.length;
-  output['cagr'] = dailySum*365 / Data.length;
+  output['cagr'] = (Math.pow((((dailySum/ Data.length)/100)+1),365)-1)*100;
+
 
 
   return output
 };
 
-function dev(arr) {
+export function dev(arr) {
   const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
   return Math.sqrt(
     arr

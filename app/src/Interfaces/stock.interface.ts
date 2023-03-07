@@ -36,4 +36,9 @@ export interface AnalyseNormalisedStockByCAGRInterface {
   CAGRcut : number
 }
 
+export interface PortfolioData {
+  dttm?: Date;
+  portfolioValue?: number;
+}[]
+
 
