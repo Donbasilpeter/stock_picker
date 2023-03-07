@@ -8,3 +8,8 @@ export const  DateValidationError = {
     message: 'No data is found for the given period',
     errno: 404,
   };
+
+  export const  noEnoughDataError ={
+    message: 'enough data is not found for the given stock',
+    errno: 404,
+  };

@@ -5,7 +5,7 @@ import {
 } from 'src/Interfaces/stock.interface';
 import StockPriceDto from 'src/stock/dtos/create-stockPrice.dto';
 import { GPU } from 'gpu.js';
-import { noDataError } from './objects.helper';
+import { noDataError, noEnoughDataError } from './objects.helper';
 
 export const enumerateDaysBetweenDates = (startDate, endDate) => {
   let date = [];
@@ -20,6 +20,12 @@ export const fillAllDateWithData = (
   params: ParamsForEachStockApi,
 ) => {
   let allDate = enumerateDaysBetweenDates(params.fromdate, params.todate);
+  if(stockPriceDto.Data.length <= allDate.length*2/3){
+    console.log(noEnoughDataError)
+    throw noEnoughDataError
+  }
+  else{
+
   let priceDataFlag = 0;
   if (stockPriceDto.Data && stockPriceDto.Data.length) {
     let modifiedData = allDate.map((thisDate) => {
@@ -56,6 +62,7 @@ export const fillAllDateWithData = (
     console.log(noDataError)
     throw { ...noDataError, scripcode: parseInt(params.scripcode) };
   }
+}
 };
 
 export const setParams = (resetStockInput: ResetStockInterface) => {
@@ -65,11 +72,11 @@ export const setParams = (resetStockInput: ResetStockInterface) => {
         scripcode: eachStock,
         flag: '1',
         seriesid: '',
-        fromdate: resetStockInput.fromdate || '2013-01-01',
+        fromdate: resetStockInput.fromdate || '2016-01-01',
         todate: resetStockInput.todate || moment().format('YYYY-MM-DD'),
       };
     }),
-    fromdate: resetStockInput.fromdate || '2013-01-01',
+    fromdate: resetStockInput.fromdate || '2016-01-01',
     todate: resetStockInput.todate || moment().format('YYYY-MM-DD'),
   };
 };
