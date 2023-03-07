@@ -119,7 +119,7 @@ export class PortfolioGeneratorService {
       return(err)
     })
   }
-  analyseBySortAndCut({SDcut = 1.5,CAGRcut =25}:AnalysePortfolioByCutInterface){
+  analyseBySortAndCut({SDcut = 1.7,CAGRcut =20}:AnalysePortfolioByCutInterface){
     return this.PortfolioModel.find({})
     .lean()
     .then((normalizedStocks)=>{
