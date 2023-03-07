@@ -1,5 +1,5 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { AnalysePortfolioByCutInterface, AnalysePortfolioInterface } from 'src/Interfaces/stock.interface';
+import { AnalysePortfolioByCAGRInterface, AnalysePortfolioByCutInterface, AnalysePortfolioInterface } from 'src/Interfaces/stock.interface';
 import { PortfolioGeneratorService } from './portfolio-generator.service';
 
 
@@ -26,6 +26,12 @@ export class PortfolioGeneratorController {
   @Post("analyse-by-sort-cut-SD")
   analyseBySortAndCut(@Body() AnalysePortfolioByCut: AnalysePortfolioByCutInterface) {
     return this.portfolioGeneratorService.analyseBySortAndCut(AnalysePortfolioByCut);
+
+  }
+
+  @Post("analyse-by-CAGR")
+  analyseByCagr(@Body() analyseByCagr: AnalysePortfolioByCAGRInterface) {
+    return this.portfolioGeneratorService.analyseByCagr(analyseByCagr);
 
   }
 

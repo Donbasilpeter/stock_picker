@@ -1,11 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { getMax, getMin, resultValidation, stockToPortfolio } from 'src/Helpers/app.helper';
+import {
+  getMax,
+  getMin,
+  resultValidation,
+  stockToPortfolio,
+} from 'src/Helpers/app.helper';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { StockPrice, StockPriceDocument } from '../schemas/StockPrice.schema';
 import { Portfolio, PortfolioDocument } from 'src/schemas/portfolio.schema';
 import PortfolioDto from './dto/create-portfolio-generator.dto';
-import { AnalysePortfolioByCutInterface, AnalysePortfolioInterface } from 'src/Interfaces/stock.interface';
+import {
+  AnalysePortfolioByCAGRInterface,
+  AnalysePortfolioByCutInterface,
+  AnalysePortfolioInterface,
+} from 'src/Interfaces/stock.interface';
 
 @Injectable()
 export class PortfolioGeneratorService {
@@ -24,9 +33,8 @@ export class PortfolioGeneratorService {
           .lean()
           .then((allData) => {
             return allData.map((eachData) => {
-                return stockToPortfolio(eachData);
-              })
-            
+              return stockToPortfolio(eachData);
+            });
           })
           .then((portfolioOfOneStock) => {
             let dailyMeanMin = getMin(portfolioOfOneStock, 'dailyMean');
@@ -39,30 +47,28 @@ export class PortfolioGeneratorService {
               portfolioOfOneStock,
               'dailyStandardDeviation',
             );
-            return portfolioOfOneStock.map(async (eachPortfolio: PortfolioDto) => {
-              eachPortfolio.NormalisedDailyMean =
-                (eachPortfolio.dailyMean - dailyMeanMin) /
-                  (dailyMeanMax - dailyMeanMin) +
-                1;
-              eachPortfolio.NormalisedDailyStandardDeviation =
-                (eachPortfolio.dailyStandardDeviation -
-                  dailyStandardDeviationMin) /
-                  (dailyStandardDeviationMax - dailyStandardDeviationMin) +
-                1;
-              const createdstock = new this.PortfolioModel(eachPortfolio);
-              return await createdstock.save()
-              .then(data=>{
-                return data
-
-              })
-              .catch((err)=>{
-                throw { status: err };
-              })
-            });
-
-             
+            return portfolioOfOneStock.map(
+               (eachPortfolio: PortfolioDto) => {
+                eachPortfolio.NormalisedDailyMean =
+                  (eachPortfolio.dailyMean - dailyMeanMin) /
+                    (dailyMeanMax - dailyMeanMin) +
+                  1;
+                eachPortfolio.NormalisedDailyStandardDeviation =
+                  (eachPortfolio.dailyStandardDeviation -
+                    dailyStandardDeviationMin) /
+                    (dailyStandardDeviationMax - dailyStandardDeviationMin) +
+                  1;
+                const createdstock = new this.PortfolioModel(eachPortfolio);
+                 createdstock.save().catch((err) => {
+                  throw { status: err };
+                });
+                return eachPortfolio;
+              },
+            );
           })
-          .then((normalisedStock)=>{return resultValidation(normalisedStock)})
+          .then((normalisedStock) => {
+            return resultValidation(normalisedStock);
+          })
           .catch((err) => {
             console.log(err);
             throw { status: err };
@@ -70,80 +76,113 @@ export class PortfolioGeneratorService {
       })
 
       .catch((err) => {
-        console.log(err)
+        console.log(err);
         return err;
       });
   }
 
-  analyseDonIntex({coefficent=1,pfSize=20}:AnalysePortfolioInterface){
+  analyseDonIntex({ coefficent = 1, pfSize = 20 }: AnalysePortfolioInterface) {
     return this.PortfolioModel.find({})
-    .lean()
-    .then((normalizedStocks)=>{
-      let result =  normalizedStocks.map((eachNormalizedStock:Portfolio) =>{
-        eachNormalizedStock["DonIndex"] = eachNormalizedStock.NormalisedDailyMean - coefficent*eachNormalizedStock.NormalisedDailyStandardDeviation
-        return eachNormalizedStock
-      } )
-      .sort(function(a, b) {
-        var keyA = a["DonIndex"],
-          keyB = b["DonIndex"];
-        if (keyA < keyB) return 1;
-        if (keyA > keyB) return -1;
-        return 0;
+      .lean()
+      .then((normalizedStocks) => {
+        let result = normalizedStocks
+          .map((eachNormalizedStock: Portfolio) => {
+            eachNormalizedStock['DonIndex'] =
+              eachNormalizedStock.NormalisedDailyMean -
+              coefficent * eachNormalizedStock.NormalisedDailyStandardDeviation;
+            return eachNormalizedStock;
+          })
+          .sort(function (a, b) {
+            var keyA = a['DonIndex'],
+              keyB = b['DonIndex'];
+            if (keyA < keyB) return 1;
+            if (keyA > keyB) return -1;
+            return 0;
+          });
+        // .slice(0, pfSize)
+        return result;
       })
-      // .slice(0, pfSize)
-      return result
-    })
-    .catch((err)=>{
-      console.log(err)
-      return(err)
-    })
+      .catch((err) => {
+        console.log(err);
+        return err;
+      });
   }
 
-  analyseBySortingSD(){
+  analyseBySortingSD() {
     return this.PortfolioModel.find({})
-    .lean()
-    .then((normalizedStocks)=>{
-      let result = normalizedStocks
-      .sort(function(a, b) {
-        var keyA = a["dailyStandardDeviation"],
-          keyB = b["dailyStandardDeviation"];
-        if (keyA < keyB) return -1;
-        if (keyA > keyB) return 1;
-        return 0;
+      .lean()
+      .then((normalizedStocks) => {
+        let result = normalizedStocks.sort(function (a, b) {
+          var keyA = a['dailyStandardDeviation'],
+            keyB = b['dailyStandardDeviation'];
+          if (keyA < keyB) return -1;
+          if (keyA > keyB) return 1;
+          return 0;
+        });
+        // .slice(0, pfSize)
+        return result;
       })
-      // .slice(0, pfSize)
-      return result
-    })
-    .catch((err)=>{
-      console.log(err)
-      return(err)
-    })
+      .catch((err) => {
+        console.log(err);
+        return err;
+      });
   }
-  analyseBySortAndCut({SDcut = 1.7,CAGRcut =20}:AnalysePortfolioByCutInterface){
+  analyseBySortAndCut({
+    SDcut = 1.7,
+    CAGRcut = 20,
+  }: AnalysePortfolioByCutInterface) {
     return this.PortfolioModel.find({})
-    .lean()
-    .then((normalizedStocks)=>{
-      let result = normalizedStocks
-      .filter((eachStock)=>{
-        return eachStock.dailyStandardDeviation < SDcut
-      })
-      .filter((eachStock)=>{
-        return eachStock.cagr > CAGRcut
-      })
-      .sort(function(a, b) {
-        var keyA = a["dailyStandardDeviation"],
-          keyB = b["dailyStandardDeviation"];
-        if (keyA < keyB) return -1;
-        if (keyA > keyB) return 1;
-        return 0;
-      })
+      .lean()
+      .then((normalizedStocks) => {
+        let result = normalizedStocks
+          .filter((eachStock) => {
+            return eachStock.dailyStandardDeviation < SDcut;
+          })
+          .filter((eachStock) => {
+            return eachStock.cagr > CAGRcut;
+          })
+          .sort(function (a, b) {
+            var keyA = a['dailyStandardDeviation'],
+              keyB = b['dailyStandardDeviation'];
+            if (keyA < keyB) return -1;
+            if (keyA > keyB) return 1;
+            return 0;
+          });
 
-
-      return result
-    })
-    .catch((err)=>{
-      console.log(err)
-      return(err)
-    })
+        return result;
+      })
+      .catch((err) => {
+        console.log(err);
+        return err;
+      });
+  }
+  analyseByCagr(
+    { CAGRcut = 10, pfSize = 12 }: AnalysePortfolioByCAGRInterface) {
+    return this.PortfolioModel.find({})
+      .lean()
+      .then((normalizedStocks) => {
+        let result = normalizedStocks
+        .filter((eachStock) => {
+          return eachStock.cagr > CAGRcut;
+        }) 
+        if(result.length < pfSize)
+        {
+          return {status:"failure",message:"No enough stocks with given CAGR"}
+        }
+        result =  result
+        .sort(function (a, b) {
+          var keyA = a['dailyStandardDeviation'],
+            keyB = b['dailyStandardDeviation'];
+          if (keyA < keyB) return -1;
+          if (keyA > keyB) return 1;
+          return 0;
+        })
+        .slice(0, pfSize)
+        return result;
+      })
+      .catch((err) => {
+        console.log(err);
+        return err;
+      });
   }
 }

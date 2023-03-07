@@ -31,3 +31,9 @@ export interface AnalysePortfolioByCutInterface {
   CAGRcut : number
 }
 
+export interface AnalysePortfolioByCAGRInterface {
+  pfSize : number,
+  CAGRcut : number
+}
+
+
