@@ -107,7 +107,7 @@ export const resultValidation = (data) => {
   }
 };
 
-// export const convertIntoPortfolioParallely =(array1,array2)=>{
+// export const convertIntoNormalisedStockParallely =(array1,array2)=>{
 //   const gpu = new GPU();
 //   let value = []
 // let parallelProcess = gpu
@@ -124,7 +124,7 @@ export const resultValidation = (data) => {
 // return x
 // }
 
-export const stockToPortfolio = (data) => {
+export const stockToNormalisedStock = (data) => {
   let output = {};
 
   let Data = [];

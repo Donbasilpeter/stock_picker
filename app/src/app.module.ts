@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { StockModule } from './stock/stock.module';
-import { PortfolioGeneratorModule } from './portfolio-generator/portfolio-generator.module';
+import { NormalisedStockGeneratorModule } from './normalisedStock-generator/normalisedStock-generator.module';
 
 import { HttpModule } from '@nestjs/axios';
 import { GlobalHttpModule } from './global.module';
@@ -15,7 +15,7 @@ import { GlobalHttpModule } from './global.module';
     GlobalHttpModule,
     HttpModule,
     StockModule,
-    PortfolioGeneratorModule,
+    NormalisedStockGeneratorModule,
   ],
 })
 export class AppModule {}

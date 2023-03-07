@@ -4,7 +4,7 @@ export interface DataInterface {
   vole: number;
 }
 
-export interface DataInterfacePortfolio {
+export interface DataInterfaceNormalisedStock {
   dttm: Date;
   dailyChange: number;
 }
@@ -22,16 +22,16 @@ export interface ResetStockInterface {
   todate?: string,
 };
 
-export interface AnalysePortfolioInterface {
+export interface AnalyseNormalisedStockInterface {
   coefficent : number,
   pfSize : number
 }
-export interface AnalysePortfolioByCutInterface {
+export interface AnalyseNormalisedStockByCutInterface {
   SDcut : number,
   CAGRcut : number
 }
 
-export interface AnalysePortfolioByCAGRInterface {
+export interface AnalyseNormalisedStockByCAGRInterface {
   pfSize : number,
   CAGRcut : number
 }

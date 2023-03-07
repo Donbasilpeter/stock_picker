@@ -3,66 +3,66 @@ import {
   getMax,
   getMin,
   resultValidation,
-  stockToPortfolio,
+  stockToNormalisedStock,
 } from 'src/Helpers/app.helper';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { StockPrice, StockPriceDocument } from '../schemas/StockPrice.schema';
-import { Portfolio, PortfolioDocument } from 'src/schemas/portfolio.schema';
-import PortfolioDto from './dto/create-portfolio-generator.dto';
+import { NormalisedStock, NormalisedStockDocument } from 'src/schemas/normalisedStock.schema';
+import NormalisedStockDto from './dto/create-normalisedStock-generator.dto';
 import {
-  AnalysePortfolioByCAGRInterface,
-  AnalysePortfolioByCutInterface,
-  AnalysePortfolioInterface,
+  AnalyseNormalisedStockByCAGRInterface,
+  AnalyseNormalisedStockByCutInterface,
+  AnalyseNormalisedStockInterface,
 } from 'src/Interfaces/stock.interface';
 
 @Injectable()
-export class PortfolioGeneratorService {
+export class NormalisedStockGeneratorService {
   constructor(
     @InjectModel(StockPrice.name)
     private StockPriceModel: Model<StockPriceDocument>,
-    @InjectModel(Portfolio.name)
-    private PortfolioModel: Model<PortfolioDocument>,
+    @InjectModel(NormalisedStock.name)
+    private NormalisedStockModel: Model<NormalisedStockDocument>,
   ) {}
 
-  createPortfolio() {
-    return this.PortfolioModel.collection
+  createNormalisedStock() {
+    return this.NormalisedStockModel.collection
       .drop()
       .then(() => {
         return this.StockPriceModel.find({})
           .lean()
           .then((allData) => {
             return allData.map((eachData) => {
-              return stockToPortfolio(eachData);
+              return stockToNormalisedStock(eachData);
             });
           })
-          .then((portfolioOfOneStock) => {
-            let dailyMeanMin = getMin(portfolioOfOneStock, 'dailyMean');
-            let dailyMeanMax = getMax(portfolioOfOneStock, 'dailyMean');
+          .then((normalisedStockOfOneStock) => {
+            let dailyMeanMin = getMin(normalisedStockOfOneStock, 'dailyMean');
+            let dailyMeanMax = getMax(normalisedStockOfOneStock, 'dailyMean');
             let dailyStandardDeviationMin = getMin(
-              portfolioOfOneStock,
+              normalisedStockOfOneStock,
               'dailyStandardDeviation',
             );
             let dailyStandardDeviationMax = getMax(
-              portfolioOfOneStock,
+              normalisedStockOfOneStock,
               'dailyStandardDeviation',
             );
-            return portfolioOfOneStock.map(
-               (eachPortfolio: PortfolioDto) => {
-                eachPortfolio.NormalisedDailyMean =
-                  (eachPortfolio.dailyMean - dailyMeanMin) /
+            return normalisedStockOfOneStock.map(
+               (eachNormalisedStock: NormalisedStockDto) => {
+                eachNormalisedStock.NormalisedDailyMean =
+                  (eachNormalisedStock.dailyMean - dailyMeanMin) /
                     (dailyMeanMax - dailyMeanMin) +
                   1;
-                eachPortfolio.NormalisedDailyStandardDeviation =
-                  (eachPortfolio.dailyStandardDeviation -
+                eachNormalisedStock.NormalisedDailyStandardDeviation =
+                  (eachNormalisedStock.dailyStandardDeviation -
                     dailyStandardDeviationMin) /
                     (dailyStandardDeviationMax - dailyStandardDeviationMin) +
                   1;
-                const createdstock = new this.PortfolioModel(eachPortfolio);
+                const createdstock = new this.NormalisedStockModel(eachNormalisedStock);
                  createdstock.save().catch((err) => {
                   throw { status: err };
                 });
-                return eachPortfolio;
+                return eachNormalisedStock;
               },
             );
           })
@@ -81,12 +81,12 @@ export class PortfolioGeneratorService {
       });
   }
 
-  analyseDonIntex({ coefficent = 1, pfSize = 20 }: AnalysePortfolioInterface) {
-    return this.PortfolioModel.find({})
+  analyseDonIntex({ coefficent = 1, pfSize = 20 }: AnalyseNormalisedStockInterface) {
+    return this.NormalisedStockModel.find({})
       .lean()
       .then((normalizedStocks) => {
         let result = normalizedStocks
-          .map((eachNormalizedStock: Portfolio) => {
+          .map((eachNormalizedStock: NormalisedStock) => {
             eachNormalizedStock['DonIndex'] =
               eachNormalizedStock.NormalisedDailyMean -
               coefficent * eachNormalizedStock.NormalisedDailyStandardDeviation;
@@ -109,7 +109,7 @@ export class PortfolioGeneratorService {
   }
 
   analyseBySortingSD() {
-    return this.PortfolioModel.find({})
+    return this.NormalisedStockModel.find({})
       .lean()
       .then((normalizedStocks) => {
         let result = normalizedStocks.sort(function (a, b) {
@@ -130,8 +130,8 @@ export class PortfolioGeneratorService {
   analyseBySortAndCut({
     SDcut = 1.7,
     CAGRcut = 20,
-  }: AnalysePortfolioByCutInterface) {
-    return this.PortfolioModel.find({})
+  }: AnalyseNormalisedStockByCutInterface) {
+    return this.NormalisedStockModel.find({})
       .lean()
       .then((normalizedStocks) => {
         let result = normalizedStocks
@@ -157,8 +157,8 @@ export class PortfolioGeneratorService {
       });
   }
   analyseByCagr(
-    { CAGRcut = 10, pfSize = 12 }: AnalysePortfolioByCAGRInterface) {
-    return this.PortfolioModel.find({})
+    { CAGRcut = 10, pfSize = 12 }: AnalyseNormalisedStockByCAGRInterface) {
+    return this.NormalisedStockModel.find({})
       .lean()
       .then((normalizedStocks) => {
         let result = normalizedStocks

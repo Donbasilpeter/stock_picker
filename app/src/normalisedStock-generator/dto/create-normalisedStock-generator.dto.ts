@@ -1,7 +1,7 @@
 import {  IsNotEmpty,IsNumber,IsString,IsArray } from 'class-validator';
-import { DataInterfacePortfolio } from 'src/Interfaces/stock.interface';
+import { DataInterfaceNormalisedStock } from 'src/Interfaces/stock.interface';
 
-export class PortfolioDto {
+export class NormalisedStockDto {
 
   @IsNotEmpty()
   @IsString()
@@ -33,7 +33,7 @@ export class PortfolioDto {
 
   @IsNotEmpty()
   @IsArray()
-  Data: DataInterfacePortfolio[]
+  Data: DataInterfaceNormalisedStock[]
 }
 
-export default PortfolioDto;
+export default NormalisedStockDto;

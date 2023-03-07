@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { DataInterfacePortfolio } from 'src/Interfaces/stock.interface';
+import { DataInterfaceNormalisedStock } from 'src/Interfaces/stock.interface';
 import { HydratedDocument } from 'mongoose';
 
-export type PortfolioDocument = HydratedDocument<Portfolio>;
+export type NormalisedStockDocument = HydratedDocument<NormalisedStock>;
 @Schema()
-export class Portfolio {
+export class NormalisedStock {
 
 
   @Prop({unique:true,type:String,required: true})
@@ -28,8 +28,8 @@ export class Portfolio {
   @Prop({type: Number,required: true})
   NormalisedDailyStandardDeviation: number;
 
-  @Prop({type: Array<DataInterfacePortfolio>,required: true })
-  Data: DataInterfacePortfolio[]
+  @Prop({type: Array<DataInterfaceNormalisedStock>,required: true })
+  Data: DataInterfaceNormalisedStock[]
 
 }
-export const PortfolioSchema = SchemaFactory.createForClass(Portfolio);
+export const NormalisedStockSchema = SchemaFactory.createForClass(NormalisedStock);
