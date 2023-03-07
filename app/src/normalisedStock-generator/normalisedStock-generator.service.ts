@@ -36,6 +36,9 @@ export class NormalisedStockGeneratorService {
   createNormalisedStock() {
     return this.NormalisedStockModel.collection
       .drop()
+      .then(()=>{
+        return this.PortfolioModel.collection.drop()
+      })
       .then(() => {
         return this.StockPriceModel.find({})
           .lean()
