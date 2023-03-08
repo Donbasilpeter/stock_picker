@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { DataInterfaceNormalisedStock } from 'src/Interfaces/stock.interface';
+import { DataInterfaceNormalisedStock, NormalisedDataInterfaceNormalisedStock } from 'src/Interfaces/stock.interface';
 import { HydratedDocument } from 'mongoose';
 
 export type NormalisedStockDocument = HydratedDocument<NormalisedStock>;
@@ -30,6 +30,9 @@ export class NormalisedStock {
 
   @Prop({type: Array<DataInterfaceNormalisedStock>,required: true })
   Data: DataInterfaceNormalisedStock[]
+
+  @Prop({type: Array<NormalisedDataInterfaceNormalisedStock>,required: true })
+  normalisedData: NormalisedDataInterfaceNormalisedStock[]
 
 }
 export const NormalisedStockSchema = SchemaFactory.createForClass(NormalisedStock);

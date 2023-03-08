@@ -137,12 +137,18 @@ export const stockToNormalisedStock = (data) => {
   let Data = [];
   let dailySum = 0;
   let arrayOfDailyChange = [];
+  let BaseData:number = data.Data[0].vale1
+  let normalisedData = [{dttm:data.Data[0].dttm, normalisedData:100}]
+
 
   for (let i = 1; i < data.Data.length; i++) {
     let dailyChange = ((data.Data[i].vale1 - data.Data[i - 1].vale1) * 100) / data.Data[i - 1].vale1;
     dailySum = dailySum + dailyChange;
     Data.push({ dttm: data.Data[i].dttm, dailyChange: dailyChange });
     arrayOfDailyChange.push(dailyChange);
+    normalisedData.push({ dttm: data.Data[i].dttm, normalisedData: (data.Data[i].vale1)*100/BaseData  });
+
+    
   }
   output['Scripname'] = data.Scripname;
   output['scripcode'] = data.scripcode;
@@ -150,6 +156,10 @@ export const stockToNormalisedStock = (data) => {
   output['dailyStandardDeviation'] = dev(arrayOfDailyChange);
   output['dailyMean'] = dailySum / Data.length;
   output['cagr'] = (Math.pow((((dailySum/ Data.length)/100)+1),365)-1)*100;
+  output['normalisedData'] = normalisedData;
+
+
+
 
 
 

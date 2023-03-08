@@ -8,6 +8,11 @@ export interface DataInterfaceNormalisedStock {
   dttm: Date;
   dailyChange: number;
 }
+export interface NormalisedDataInterfaceNormalisedStock {
+  dttm: Date;
+  normalisedData: number;
+}
+
 
 export interface ParamsForEachStockApi {
   scripcode: string
