@@ -36,6 +36,11 @@ export class PortfolioDto {
   @IsNotEmpty()
   @IsArray()
   Data: PortfolioData[]
+
+  @IsNotEmpty()
+  @IsArray()
+  arrayOfDailyChange: DataInterfaceNormalisedStock[] ;
+
 }
 
 export default PortfolioDto;

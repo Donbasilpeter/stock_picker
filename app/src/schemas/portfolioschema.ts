@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { PortfolioData } from 'src/Interfaces/stock.interface';
+import { DataInterfaceNormalisedStock, PortfolioData } from 'src/Interfaces/stock.interface';
 import { HydratedDocument } from 'mongoose';
 import PortfolioDto from 'src/normalisedStock-generator/dto/create.portfolio.dto';
 
@@ -28,6 +28,9 @@ export class Portfolio {
 
   @Prop({type: Array<PortfolioDto>,required: true })
   portfolioStocks: PortfolioDto[] ;
+
+  @Prop({type: Array<DataInterfaceNormalisedStock>,required: true })
+  arrayOfDailyChange: DataInterfaceNormalisedStock[] ;
 
 
 }

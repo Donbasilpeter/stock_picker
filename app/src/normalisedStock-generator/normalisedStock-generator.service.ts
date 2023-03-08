@@ -230,36 +230,36 @@ export class NormalisedStockGeneratorService {
 
   createPortfolio(arrayForPortfolio: NormalisedStockDocument[],CAGRcut) {
     let portfolioData = [];
-    let totalData = arrayForPortfolio[0].Data.length;
+    let totalData = arrayForPortfolio[0].normalisedData.length;
     let pfSize = arrayForPortfolio.length;
     for (let i = 0; i < totalData; i++) {
-      let currentDateDailyChangeSum = 0;
+      let currentDateNormalisedDataSum = 0;
       for (let j = 0; j < pfSize; j++) {
-        currentDateDailyChangeSum += arrayForPortfolio[j].Data[i].dailyChange;
+        currentDateNormalisedDataSum += arrayForPortfolio[j].normalisedData[i].normalisedData;
       }
       portfolioData.push({
-        portfolioValue:currentDateDailyChangeSum/pfSize,
-        dttm:arrayForPortfolio[0].Data[i].dttm
+        portfolioValue:currentDateNormalisedDataSum/pfSize,
+        dttm:arrayForPortfolio[0].normalisedData[i].dttm
       })
     }
-    let dailyMean = 0
-    portfolioData.map((data)=>
-    data.portfolioValue
-    ).forEach(function(item) {
-      dailyMean += item;
-  });
-  dailyMean = dailyMean/totalData
-    
+
+
+    let dailySum = 0;
+    let arrayOfDailyChange = [];
+    for (let i = 1; i < portfolioData.length; i++) {
+      let dailyChange = ((portfolioData[i].portfolioValue - portfolioData[i - 1].portfolioValue) * 100) / portfolioData[i - 1].portfolioValue;
+      dailySum = dailySum + dailyChange;
+      arrayOfDailyChange.push({dttm:portfolioData[i].dttm,dailyChange:dailyChange});
+    }
     let portfolio = {
       pfSize :pfSize,
       CAGRcut : CAGRcut,
       portfolioStocks: arrayForPortfolio,
       Data :portfolioData,
-      dailyMean:dailyMean,
-      dailyStandardDeviation: dev(portfolioData.map((data)=>
-      data.portfolioValue
-      )),
-      cagr: (Math.pow((((dailyMean)/100)+1),365)-1)*100
+      arrayOfDailyChange:arrayOfDailyChange,
+      dailyMean:dailySum / totalData,
+      dailyStandardDeviation:  dev(arrayOfDailyChange.map((eachData)=>eachData.dailyChange)),
+      cagr: (Math.pow((((dailySum/ totalData)/100)+1),365)-1)*100
     }
     
     return portfolio;
