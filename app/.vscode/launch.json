@@ -18,7 +18,6 @@
             "console": "integratedTerminal",
             "restart": true,
             "autoAttachChildProcesses": true,
-            "cwd": "${workspaceFolder}/app"
           },
     ]
 }
