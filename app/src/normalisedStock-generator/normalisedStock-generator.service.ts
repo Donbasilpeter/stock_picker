@@ -180,7 +180,7 @@ export class NormalisedStockGeneratorService {
     return this.PortfolioModel.find({CAGRcut:CAGRcut,pfSize:pfSize})
     .then((portfolio)=>{
       if(portfolio.length){
-        return portfolio;
+        return portfolio[0];
       }
       else{
         return this.NormalisedStockModel.find({})
