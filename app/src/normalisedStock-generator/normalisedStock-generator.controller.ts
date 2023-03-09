@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import { AnalyseNormalisedStockByCAGRInterface, AnalyseNormalisedStockByCutInterface, AnalyseNormalisedStockInterface } from 'src/Interfaces/stock.interface';
 import { NormalisedStockGeneratorService } from './normalisedStock-generator.service';
 
@@ -6,6 +6,11 @@ import { NormalisedStockGeneratorService } from './normalisedStock-generator.ser
 @Controller('normalisedStock')
 export class NormalisedStockGeneratorController {
   constructor(private readonly normalisedStockGeneratorService: NormalisedStockGeneratorService) {}
+
+  @Get("/get-normalised-data")
+  get() {
+    return this.normalisedStockGeneratorService.getnormalisedData();
+  }
 
   @Post("/normalise-stocks")
   create() {

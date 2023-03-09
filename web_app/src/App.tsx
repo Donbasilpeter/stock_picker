@@ -8,6 +8,7 @@ import {
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Header from "./components/header/Header";
+import StockAnalysisChart from "./components/stock-analysis-chart/StockAnalysisChart";
 
 
 let theme = createTheme({
@@ -41,6 +42,7 @@ const App = () => {
         <Box>
           <CssBaseline />
           <Header />
+          <StockAnalysisChart/>
 
         </Box>
       </ThemeProvider>

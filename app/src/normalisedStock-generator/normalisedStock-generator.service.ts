@@ -33,6 +33,11 @@ export class NormalisedStockGeneratorService {
     private PortfolioModel: Model<PortfolioDocument>,
   ) {}
 
+  getnormalisedData(){
+    return this.NormalisedStockModel.find({})
+    .select("Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation")
+  }
+
   createNormalisedStock() {
     return this.NormalisedStockModel.collection
       .drop()

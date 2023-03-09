@@ -1,5 +1,8 @@
+import { NormalisedStocks } from "./props";
+
 export interface State {
   navbar: Navbar;
+  normalisedStock: normalisedStocks
 }
 
 export interface Navbar {
@@ -9,4 +12,7 @@ export interface Navbar {
 
 export interface AppProps {
   store: State;
+}
+export interface normalisedStocks{
+  normalisedStocks: NormalisedStocks[]
 }

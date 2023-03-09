@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
-  navItems: ["Home", "About", "Skills", "Education", "Experience", "Contact"],
+  navItems: ["Home","P-Generator", "About","Contact"],
   currentNavItem: "Home",
 };
 
