@@ -8,8 +8,9 @@ import {
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Header from "./components/header/Header";
-import StockAnalysisChart from "./components/stock-analysis-chart/StockAnalysisChart";
-
+import MarketViewer from "./components/market-viewer/MarketViewer";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import StockAnalysis from "./components/stock-analysis/StockAnalysis";
 
 let theme = createTheme({
   palette: {
@@ -41,9 +42,17 @@ const App = () => {
       <ThemeProvider theme={theme}>
         <Box>
           <CssBaseline />
-          <Header />
-          <StockAnalysisChart/>
 
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Header />}>
+                <Route path="Market-Viewer" element={<MarketViewer />} />
+                <Route path="/stock-analysis/:scripcode" element={<StockAnalysis />} />
+
+                
+              </Route>
+            </Routes>
+          </BrowserRouter>
         </Box>
       </ThemeProvider>
     </>

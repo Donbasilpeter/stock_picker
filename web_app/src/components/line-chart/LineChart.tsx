@@ -3,36 +3,33 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  CategoryScale,
   Tooltip,
   Legend,
 } from "chart.js";
-import { Scatter } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import zoomPlugin from "chartjs-plugin-zoom";
 ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
+  CategoryScale,
   zoomPlugin,
   Tooltip,
   Legend
 );
-import { ScatterChartDataProps } from "../../interfaces/props";
-import { Box } from "@mui/material";
 
-const ScatterChart = ({ scatterChartData,labelAndApicall,onSelection }: ScatterChartDataProps) => {
+
+
+const LineChart = ({LineChartData}) => {
   const options:any = {
     scales: {
       y: {
         beginAtZero: true,
       },
     },
-    onClick: onSelection,
     plugins: {
-      tooltip: {
-        callbacks: {
-          label: labelAndApicall
-        },
-      },
+
   
       zoom: {
         zoom: {
@@ -53,17 +50,18 @@ const ScatterChart = ({ scatterChartData,labelAndApicall,onSelection }: ScatterC
   };
 
   const data = {
-    datasets: [
-      {
-        label: "Stock Plots",
-        data: scatterChartData,
-        backgroundColor: "rgba(255, 99, 132, 1)",
-      },
-    ],
+    labels: LineChartData.normalisedData?.map((data:any)=>data.dttm),
+    datasets: [{
+      label: 'My First Dataset',
+      data: LineChartData.normalisedData?.map((data:any)=>data.normalisedData),
+      fill: false,
+      borderColor: 'rgb(75, 192, 192)',
+      tension: 0.1
+    }]
   };
   return (
-   <Scatter options={options} data={data} />
+   <Line options={options} data={data} />
   )
 };
 
-export default ScatterChart;
+export default LineChart;

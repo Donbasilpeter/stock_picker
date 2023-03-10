@@ -13,5 +13,9 @@ export interface NormalisedStocks {
 
 export interface ScatterChartDataProps {
   scatterChartData:NormalisedStocks[]
+  labelAndApicall: (tooltipItem: any) => string,
+  onSelection: (event: any, elements: any) => void
 }
+
+
 

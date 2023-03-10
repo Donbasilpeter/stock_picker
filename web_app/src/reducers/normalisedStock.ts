@@ -1,6 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
-    normalisedStocks:[]
+    normalisedStocks:[],
+    selectedStock:0,
+    selectedStockData:{},
+
 };
 
 const normalisedStocksSlice = createSlice({
@@ -10,8 +13,14 @@ const normalisedStocksSlice = createSlice({
     setNormalisedStocks: (state, action) => {
       state.normalisedStocks = action.payload;
     },
+    setSelectedStock: (state, action) => {
+      state.selectedStock = action.payload;
+    },
+    setSelectedStockData: (state, action) => {
+      state.selectedStockData = action.payload;
+    },
   },
 });
 
-export const { setNormalisedStocks } =normalisedStocksSlice.actions;
+export const { setNormalisedStocks, setSelectedStock,setSelectedStockData } =normalisedStocksSlice.actions;
 export default normalisedStocksSlice.reducer;

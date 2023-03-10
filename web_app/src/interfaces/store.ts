@@ -15,4 +15,7 @@ export interface AppProps {
 }
 export interface normalisedStocks{
   normalisedStocks: NormalisedStocks[]
+  selectedStock: number
+  selectedStockData :any
+
 }

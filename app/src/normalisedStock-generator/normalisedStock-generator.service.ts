@@ -38,6 +38,11 @@ export class NormalisedStockGeneratorService {
     .select("Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation")
   }
 
+  getStockData(scripcode){
+    return this.NormalisedStockModel.find({scripcode:scripcode})
+    .select("Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation normalisedData")
+  }
+
   createNormalisedStock() {
     return this.NormalisedStockModel.collection
       .drop()

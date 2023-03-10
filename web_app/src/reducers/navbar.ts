@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
-  navItems: ["Home","P-Generator", "About","Contact"],
-  currentNavItem: "Home",
+  navItems: ["Home","Market-Viewer","P-Generator", "About","Contact"],
+  currentNavItem: "Market-Viewer",
 };
 
 const navBarSlice = createSlice({

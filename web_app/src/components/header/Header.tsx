@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { State } from "../../interfaces/store";
 import { setCurrentNavItem } from "../../reducers/navbar";
 import useScrollTrigger from '@mui/material/useScrollTrigger';
+import { Outlet, useNavigate } from "react-router-dom";
 
 const drawerWidth = "40%";
 
@@ -21,6 +22,14 @@ export default function DrawerAppBar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
   const navItems = useSelector((state: State) => state.navbar.navItems);
+  const CurrentNavItem = useSelector((state: State) => state.navbar.currentNavItem);
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+  navigate(CurrentNavItem)
+
+ },[CurrentNavItem]);
   
 
   const handleDrawerToggle = () => {
@@ -100,6 +109,7 @@ export default function DrawerAppBar() {
           />
         </Drawer>
       </Box>
+      <Outlet />
     </>
   );
 }
