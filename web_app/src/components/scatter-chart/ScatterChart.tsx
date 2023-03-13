@@ -17,10 +17,14 @@ ChartJS.register(
   Legend
 );
 import { ScatterChartDataProps } from "../../interfaces/props";
-import { Box } from "@mui/material";
+import {  useTheme } from "@mui/material";
 
 const ScatterChart = ({ scatterChartData,labelAndApicall,onSelection }: ScatterChartDataProps) => {
+  const theme = useTheme();
+
   const options:any = {
+    responsive:true,
+    maintainAspectRatio:false,
     scales: {
       y: {
         beginAtZero: true,
@@ -57,7 +61,10 @@ const ScatterChart = ({ scatterChartData,labelAndApicall,onSelection }: ScatterC
       {
         label: "Stock Plots",
         data: scatterChartData,
-        backgroundColor: "rgba(255, 99, 132, 1)",
+        backgroundColor: theme.palette.primary.main,
+        borderColor: theme.palette.secondary.main,
+
+
       },
     ],
   };

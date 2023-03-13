@@ -2,7 +2,8 @@ import { NormalisedStocks } from "./props";
 
 export interface State {
   navbar: Navbar;
-  normalisedStock: normalisedStocks
+  normalisedStock: normalisedStocks,
+  portfolio:PortfolioReducer
 }
 
 export interface Navbar {
@@ -16,6 +17,37 @@ export interface AppProps {
 export interface normalisedStocks{
   normalisedStocks: NormalisedStocks[]
   selectedStock: number
-  selectedStockData :any
+  selectedStockData :SelectedStockData
 
+}
+
+export interface SelectedStockData {
+  normalisedData:{
+    dttm:string,
+    normalisedData:number,
+  }[],
+  Scripname:string,
+  NormalisedDailyMean:number,
+  NormalisedDailyStandardDeviation:number,
+  cagr:number,
+  dailyMean:number,
+  dailyStandardDeviation:number,
+  scripcode:number,
+  _id:string,
+}
+
+export interface PortfolioReducer {
+portfolioStocks:number[]
+portfolioStocksData:SelectedStockData[],
+portfolio:Portfolio
+
+}
+
+export interface Portfolio {
+  Data: any[];
+  arrayOfDailyChange: any[];
+  dailyMean: number;
+  dailyStandardDeviation: number;
+  cagr: number;
+  stocks:number[]
 }

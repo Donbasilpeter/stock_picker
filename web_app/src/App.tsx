@@ -11,14 +11,15 @@ import Header from "./components/header/Header";
 import MarketViewer from "./components/market-viewer/MarketViewer";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import StockAnalysis from "./components/stock-analysis/StockAnalysis";
+import PortfolioAnalysis from "./components/portfolio-analysis/PortfolioAnalysis";
 
 let theme = createTheme({
   palette: {
     primary: {
-      main: "#D61355",
+      main: "#F55050",
     },
     secondary: {
-      main: "#F1E5EA",
+      main: "#F48484",
     },
   },
   typography: {
@@ -40,18 +41,24 @@ const App = () => {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <Box>
-          <CssBaseline />
+        <Box component="main" sx={{ height: "100vh", width: "100vw" }}>
 
+          <CssBaseline />
           <BrowserRouter>
+
             <Routes>
+
               <Route path="/" element={<Header />}>
-                <Route path="Market-Viewer" element={<MarketViewer />} />
+
+                <Route path="*" element={<MarketViewer />} />
                 <Route path="/stock-analysis/:scripcode" element={<StockAnalysis />} />
+                <Route path="/P-Generator" element={<PortfolioAnalysis />} />
+
 
                 
               </Route>
             </Routes>
+
           </BrowserRouter>
         </Box>
       </ThemeProvider>

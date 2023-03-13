@@ -42,6 +42,22 @@ export class NormalisedStockGeneratorService {
     return this.NormalisedStockModel.find({scripcode:scripcode})
     .select("Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation normalisedData")
   }
+  generatePortfolio(scripcodeArray){
+    return this.NormalisedStockModel.find({scripcode:{ $in: scripcodeArray } })
+    .select("Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation normalisedData")
+    .then((selectedStocks: NormalisedStockDocument[]) => {
+
+      let portfolio =   this.genPortfolio(selectedStocks)
+      portfolio["stocks"] = scripcodeArray
+      return portfolio
+
+    })
+    .catch((err) => {
+      console.log(err);
+      return err;
+    });
+  }
+  
 
   createNormalisedStock() {
     return this.NormalisedStockModel.collection
@@ -265,6 +281,39 @@ export class NormalisedStockGeneratorService {
       pfSize :pfSize,
       CAGRcut : CAGRcut,
       portfolioStocks: arrayForPortfolio,
+      Data :portfolioData,
+      arrayOfDailyChange:arrayOfDailyChange,
+      dailyMean:dailySum / totalData,
+      dailyStandardDeviation:  dev(arrayOfDailyChange.map((eachData)=>eachData.dailyChange)),
+      cagr: (Math.pow((((dailySum/ totalData)/100)+1),365)-1)*100
+    }
+    
+    return portfolio;
+  }
+  genPortfolio(arrayForPortfolio: NormalisedStockDocument[]) {
+    let portfolioData = [];
+    let totalData = arrayForPortfolio[0].normalisedData.length;
+    let pfSize = arrayForPortfolio.length;
+    for (let i = 0; i < totalData; i++) {
+      let currentDateNormalisedDataSum = 0;
+      for (let j = 0; j < pfSize; j++) {
+        currentDateNormalisedDataSum += arrayForPortfolio[j].normalisedData[i].normalisedData;
+      }
+      portfolioData.push({
+        portfolioValue:currentDateNormalisedDataSum/pfSize,
+        dttm:arrayForPortfolio[0].normalisedData[i].dttm
+      })
+    }
+
+
+    let dailySum = 0;
+    let arrayOfDailyChange = [];
+    for (let i = 1; i < portfolioData.length; i++) {
+      let dailyChange = ((portfolioData[i].portfolioValue - portfolioData[i - 1].portfolioValue) * 100) / portfolioData[i - 1].portfolioValue;
+      dailySum = dailySum + dailyChange;
+      arrayOfDailyChange.push({dttm:portfolioData[i].dttm,dailyChange:dailyChange});
+    }
+    let portfolio = {
       Data :portfolioData,
       arrayOfDailyChange:arrayOfDailyChange,
       dailyMean:dailySum / totalData,

@@ -26,3 +26,17 @@ export const  getSelectedStockData = (selectedStock:number)=>{
     })
     
     }
+
+    export const  generatePF =  (selectedStocks:number[])=>{
+        const url = "http://localhost:3000/normalisedStock/generate-portfolio"
+        return  axios.post(url,{data:{scripcodeArray:selectedStocks}}).then((data:any)=>{
+
+            if(data.data){
+                return {status:"sucess", data: data.data}
+            }
+            else{
+                return {status:"error"}
+            }
+        })
+        
+        }

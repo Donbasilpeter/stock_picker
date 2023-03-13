@@ -39,6 +39,7 @@ const MarketViewer: React.FunctionComponent = () => {
   };
 
   useEffect(() => {
+    if(NormalisedStocksList.length==0){
     getNormalisedStockSdCagrValues().then((data) => {
       if (data.status == "sucess") {
         let normalisedScatterChartData = data.data.map((eachStock: any) => {
@@ -52,10 +53,11 @@ const MarketViewer: React.FunctionComponent = () => {
         dispatch(setNormalisedStocks(normalisedScatterChartData));
       }
     });
+  }
   }, []);
 
   return (
-    <Box sx={{ mx: 2 }}>
+    <Box sx={{ pb:"1rem",pt:"10vh",px:"5vh", height:"100%",width:"100%" }}>
       <ScatterChart
         scatterChartData={NormalisedStocksList}
         labelAndApicall={labelAndApicall}

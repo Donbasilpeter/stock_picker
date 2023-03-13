@@ -6,14 +6,16 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
 import { HeaderDrawerProps } from "../../interfaces/props";
-import { setCurrentNavItem } from "../../reducers/navbar";
 import { useDispatch } from "react-redux";
 import { useTheme } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
 
 
 const HeaderDrawer = ({ handleDrawerToggle, navItems }: HeaderDrawerProps) => {
   const dispatch = useDispatch();
   const theme = useTheme();
+  const navigate = useNavigate();
+
 
 
   return (
@@ -28,7 +30,7 @@ const HeaderDrawer = ({ handleDrawerToggle, navItems }: HeaderDrawerProps) => {
             key={item}
             disablePadding
             onClick={() => {
-              dispatch(setCurrentNavItem(item));
+              navigate(item)
             }}
           >
             <ListItemButton sx={{color:theme.palette.primary.main , textAlign: "center" }}>

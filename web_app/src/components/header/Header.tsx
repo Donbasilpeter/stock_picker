@@ -11,7 +11,6 @@ import Button from "@mui/material/Button";
 import HeaderDrawer from "../drawer/Drawer";
 import { useDispatch, useSelector } from "react-redux";
 import { State } from "../../interfaces/store";
-import { setCurrentNavItem } from "../../reducers/navbar";
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 import { Outlet, useNavigate } from "react-router-dom";
 
@@ -22,14 +21,10 @@ export default function DrawerAppBar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
   const navItems = useSelector((state: State) => state.navbar.navItems);
-  const CurrentNavItem = useSelector((state: State) => state.navbar.currentNavItem);
   const navigate = useNavigate();
 
 
-  useEffect(() => {
-  navigate(CurrentNavItem)
 
- },[CurrentNavItem]);
   
 
   const handleDrawerToggle = () => {
@@ -54,7 +49,8 @@ export default function DrawerAppBar() {
           </IconButton>
           <Typography
             onClick={() => {
-              dispatch(setCurrentNavItem("Home"));
+              navigate("Home")
+
             }}
             variant="h4"
             component="div"
@@ -75,7 +71,8 @@ export default function DrawerAppBar() {
             {navItems.map((item) => (
               <Button
                 onClick={() => {
-                  dispatch(setCurrentNavItem(item));
+              navigate(item)
+
                 }}
                 key={item}
                 sx={{ color: "black", mx: "0.5vw" }}

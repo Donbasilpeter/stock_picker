@@ -1,4 +1,5 @@
-import { Controller, Post, Body, Get, Param, Query } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Query, Req } from '@nestjs/common';
+import { query } from 'express';
 import { Input } from 'gpu.js';
 import { AnalyseNormalisedStockByCAGRInterface, AnalyseNormalisedStockByCutInterface, AnalyseNormalisedStockInterface } from 'src/Interfaces/stock.interface';
 import { NormalisedStockGeneratorService } from './normalisedStock-generator.service';
@@ -11,6 +12,10 @@ export class NormalisedStockGeneratorController {
   @Get("/get-normalised-data")
   getnormalisedData() {
     return this.normalisedStockGeneratorService.getnormalisedData();
+  }
+  @Post("/generate-portfolio")
+  generatePortfolio(@Body() query: {data:{scripcodeArray:number[]}}) {
+    return this.normalisedStockGeneratorService.generatePortfolio(query.data.scripcodeArray);
   }
 
     @Get("/get-stock-data")
