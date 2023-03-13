@@ -73,7 +73,7 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
 
         <Grid container justifyContent="center"sx={{pt:5}}>
           <Button variant="outlined" onClick={() => {generatePortfolio()}}>
-            Generate Portfolio
+            {portfolio.stocks.length === 0 ? "Generate Portfolio" :"Regenerate Portfolio"}
           </Button>
         </Grid>
       </Grid>
