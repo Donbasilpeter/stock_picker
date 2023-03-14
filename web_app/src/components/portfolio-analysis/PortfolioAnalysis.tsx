@@ -1,5 +1,5 @@
 import { Box, Button, Card, Grid, Typography } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { State } from "../../interfaces/store";
@@ -9,14 +9,20 @@ import {
   removePortfolioStock,
   addPortfolioStocksData,
   setPortfolio,
+  setSearchResult,
 } from "../../reducers/portfolio";
-import { generatePF, getSelectedStockData } from "../../services/apis";
+import { generatePF, getSelectedStockData, searchStockList } from "../../services/apis";
 
 import LineChart from "../line-chart/LineChart";
 import { ListPortfolioStock } from "../listPortfolioStock/ListPortfolioStock";
+import Search from "../Search/Search";
 const PortfolioAnalysis: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchField, setSearchField] = useState("");
+  const [searchColumn, setSearchColumn] = useState("Name");
+  const [dropDownArray, setDropDownArray] = useState(["Name","CAGR","SD"]);
+
 
   const portfolioStocks = useSelector(
     (state: State) => state.portfolio.portfolioStocks
@@ -25,6 +31,8 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
     (state: State) => state.portfolio.portfolioStocksData
   );
   const portfolio = useSelector((state: State) => state.portfolio.portfolio);
+  const searchResult = useSelector((state: State) => state.portfolio.searchResult);
+
 
   useEffect(() => {
     if (portfolioStocks && portfolioStocks.length > 0) {
@@ -46,8 +54,10 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
     }
   }, [portfolioStocks]);
   useEffect(() => {
-    
-  }, [portfolioStocks]);
+    if(searchField&&searchColumn)
+    searchStockList(searchColumn,searchField)
+    .then((data)=>{data.status ==="sucess" && dispatch(setSearchResult(data.data))})
+  }, [searchField,searchColumn]);
 
 
 
@@ -71,7 +81,13 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
       }}
     >
       <Grid item xs={3}>
-        <Box sx={{ overflow: "auto", height: "85vh" }}>
+      <Search
+            dropDownValues={searchResult}
+          setSearchField={setSearchField}
+          dropDownArray={dropDownArray}
+          setSearchColumn={setSearchColumn}
+        ></Search>
+        <Box sx={{ overflow: "auto", height: "76vh",mt:"2vh" }}>
           {portfolioStocksData?.map((eachStock) => {
             return (
               <ListPortfolioStock

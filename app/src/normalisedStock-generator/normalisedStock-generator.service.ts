@@ -33,37 +33,65 @@ export class NormalisedStockGeneratorService {
     private PortfolioModel: Model<PortfolioDocument>,
   ) {}
 
-  getnormalisedData(){
-    return this.NormalisedStockModel.find({})
-    .select("Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation")
+  getnormalisedData() {
+    return this.NormalisedStockModel.find({}).select(
+      'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
+    );
   }
 
-  getStockData(scripcode){
-    return this.NormalisedStockModel.find({scripcode:scripcode})
-    .select("Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation normalisedData")
+  getStockData(scripcode) {
+    return this.NormalisedStockModel.find({ scripcode: scripcode }).select(
+      'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation normalisedData',
+    );
   }
-  generatePortfolio(scripcodeArray){
-    return this.NormalisedStockModel.find({scripcode:{ $in: scripcodeArray } })
-    .select("Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation normalisedData")
-    .then((selectedStocks: NormalisedStockDocument[]) => {
-
-      let portfolio =   this.genPortfolio(selectedStocks)
-      portfolio["stocks"] = scripcodeArray
-      return portfolio
-
+  generatePortfolio(scripcodeArray) {
+    return this.NormalisedStockModel.find({
+      scripcode: { $in: scripcodeArray },
     })
-    .catch((err) => {
-      console.log(err);
-      return err;
-    });
+      .select(
+        'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation normalisedData',
+      )
+      .then((selectedStocks: NormalisedStockDocument[]) => {
+        let portfolio = this.genPortfolio(selectedStocks);
+        portfolio['stocks'] = scripcodeArray;
+        return portfolio;
+      })
+      .catch((err) => {
+        console.log(err);
+        return err;
+      });
   }
-  
+
+  searchStockList({ searchField, searchType }) {
+    if (searchType === 'Name')
+      return this.NormalisedStockModel.find({
+        Scripname: { $regex: searchField, $options: 'i' },
+      })
+        .limit(10)
+        .select(
+          'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
+        );
+    else if (searchType === 'CAGR' && !isNaN(Number(searchField)))
+      return this.NormalisedStockModel.find({ cagr: { $gt: searchField } })
+        .sort({ dailyStandardDeviation: 1 })
+        .limit(10)
+        .select(
+          'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
+        );
+    else if (searchType === 'SD' && !isNaN(Number(searchField)))
+      return this.NormalisedStockModel.find({ dailyStandardDeviation: { $lt: searchField } })
+        .sort({ cagr: -1 })
+        .limit(10)
+        .select(
+          'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
+        );
+  }
 
   createNormalisedStock() {
     return this.NormalisedStockModel.collection
       .drop()
-      .then(()=>{
-        return this.PortfolioModel.collection.drop()
+      .then(() => {
+        return this.PortfolioModel.collection.drop();
       })
       .then(() => {
         return this.StockPriceModel.find({})
@@ -202,92 +230,97 @@ export class NormalisedStockGeneratorService {
     CAGRcut = 10,
     pfSize = 12,
   }: AnalyseNormalisedStockByCAGRInterface) {
-
-    return this.PortfolioModel.find({CAGRcut:CAGRcut,pfSize:pfSize})
-    .then((portfolio)=>{
-      if(portfolio.length){
-        return portfolio[0];
-      }
-      else{
-        return this.NormalisedStockModel.find({})
-        .lean()
-        .then((normalizedStocks) => {
-          let result = normalizedStocks.filter((eachStock) => {
-            return eachStock.cagr > CAGRcut;
-          });
-          if (result.length < pfSize) {
-            return {
-              status: 'failure',
-              message: 'No enough stocks with given CAGR',
-            };
-          }
-          result = result
-            .sort(function (a, b) {
-              var keyA = a['dailyStandardDeviation'],
-                keyB = b['dailyStandardDeviation'];
-              if (keyA < keyB) return -1;
-              if (keyA > keyB) return 1;
-              return 0;
+    return this.PortfolioModel.find({ CAGRcut: CAGRcut, pfSize: pfSize })
+      .then((portfolio) => {
+        if (portfolio.length) {
+          return portfolio[0];
+        } else {
+          return this.NormalisedStockModel.find({})
+            .lean()
+            .then((normalizedStocks) => {
+              let result = normalizedStocks.filter((eachStock) => {
+                return eachStock.cagr > CAGRcut;
+              });
+              if (result.length < pfSize) {
+                return {
+                  status: 'failure',
+                  message: 'No enough stocks with given CAGR',
+                };
+              }
+              result = result
+                .sort(function (a, b) {
+                  var keyA = a['dailyStandardDeviation'],
+                    keyB = b['dailyStandardDeviation'];
+                  if (keyA < keyB) return -1;
+                  if (keyA > keyB) return 1;
+                  return 0;
+                })
+                .slice(0, pfSize);
+              return result;
             })
-            .slice(0, pfSize);
-          return result;
-        })
-        .then((selectedStocks: NormalisedStockDocument[]) => {
-          const createdPortfolio = new this.PortfolioModel(
-            this.createPortfolio(selectedStocks,CAGRcut)
-          );
-          return createdPortfolio.save().catch((err) => {
-            throw { status: err };
-          });
-           
-        })
-        .catch((err) => {
-          console.log(err);
-          return err;
-        });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      return err;
-    });
-
+            .then((selectedStocks: NormalisedStockDocument[]) => {
+              const createdPortfolio = new this.PortfolioModel(
+                this.createPortfolio(selectedStocks, CAGRcut),
+              );
+              return createdPortfolio.save().catch((err) => {
+                throw { status: err };
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+              return err;
+            });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        return err;
+      });
   }
 
-  createPortfolio(arrayForPortfolio: NormalisedStockDocument[],CAGRcut) {
+  createPortfolio(arrayForPortfolio: NormalisedStockDocument[], CAGRcut) {
     let portfolioData = [];
     let totalData = arrayForPortfolio[0].normalisedData.length;
     let pfSize = arrayForPortfolio.length;
     for (let i = 0; i < totalData; i++) {
       let currentDateNormalisedDataSum = 0;
       for (let j = 0; j < pfSize; j++) {
-        currentDateNormalisedDataSum += arrayForPortfolio[j].normalisedData[i].normalisedData;
+        currentDateNormalisedDataSum +=
+          arrayForPortfolio[j].normalisedData[i].normalisedData;
       }
       portfolioData.push({
-        portfolioValue:currentDateNormalisedDataSum/pfSize,
-        dttm:arrayForPortfolio[0].normalisedData[i].dttm
-      })
+        portfolioValue: currentDateNormalisedDataSum / pfSize,
+        dttm: arrayForPortfolio[0].normalisedData[i].dttm,
+      });
     }
-
 
     let dailySum = 0;
     let arrayOfDailyChange = [];
     for (let i = 1; i < portfolioData.length; i++) {
-      let dailyChange = ((portfolioData[i].portfolioValue - portfolioData[i - 1].portfolioValue) * 100) / portfolioData[i - 1].portfolioValue;
+      let dailyChange =
+        ((portfolioData[i].portfolioValue -
+          portfolioData[i - 1].portfolioValue) *
+          100) /
+        portfolioData[i - 1].portfolioValue;
       dailySum = dailySum + dailyChange;
-      arrayOfDailyChange.push({dttm:portfolioData[i].dttm,dailyChange:dailyChange});
+      arrayOfDailyChange.push({
+        dttm: portfolioData[i].dttm,
+        dailyChange: dailyChange,
+      });
     }
     let portfolio = {
-      pfSize :pfSize,
-      CAGRcut : CAGRcut,
+      pfSize: pfSize,
+      CAGRcut: CAGRcut,
       portfolioStocks: arrayForPortfolio,
-      Data :portfolioData,
-      arrayOfDailyChange:arrayOfDailyChange,
-      dailyMean:dailySum / totalData,
-      dailyStandardDeviation:  dev(arrayOfDailyChange.map((eachData)=>eachData.dailyChange)),
-      cagr: (Math.pow((((dailySum/ totalData)/100)+1),365)-1)*100
-    }
-    
+      Data: portfolioData,
+      arrayOfDailyChange: arrayOfDailyChange,
+      dailyMean: dailySum / totalData,
+      dailyStandardDeviation: dev(
+        arrayOfDailyChange.map((eachData) => eachData.dailyChange),
+      ),
+      cagr: (Math.pow(dailySum / totalData / 100 + 1, 365) - 1) * 100,
+    };
+
     return portfolio;
   }
   genPortfolio(arrayForPortfolio: NormalisedStockDocument[]) {
@@ -297,30 +330,39 @@ export class NormalisedStockGeneratorService {
     for (let i = 0; i < totalData; i++) {
       let currentDateNormalisedDataSum = 0;
       for (let j = 0; j < pfSize; j++) {
-        currentDateNormalisedDataSum += arrayForPortfolio[j].normalisedData[i].normalisedData;
+        currentDateNormalisedDataSum +=
+          arrayForPortfolio[j].normalisedData[i].normalisedData;
       }
       portfolioData.push({
-        portfolioValue:currentDateNormalisedDataSum/pfSize,
-        dttm:arrayForPortfolio[0].normalisedData[i].dttm
-      })
+        portfolioValue: currentDateNormalisedDataSum / pfSize,
+        dttm: arrayForPortfolio[0].normalisedData[i].dttm,
+      });
     }
-
 
     let dailySum = 0;
     let arrayOfDailyChange = [];
     for (let i = 1; i < portfolioData.length; i++) {
-      let dailyChange = ((portfolioData[i].portfolioValue - portfolioData[i - 1].portfolioValue) * 100) / portfolioData[i - 1].portfolioValue;
+      let dailyChange =
+        ((portfolioData[i].portfolioValue -
+          portfolioData[i - 1].portfolioValue) *
+          100) /
+        portfolioData[i - 1].portfolioValue;
       dailySum = dailySum + dailyChange;
-      arrayOfDailyChange.push({dttm:portfolioData[i].dttm,dailyChange:dailyChange});
+      arrayOfDailyChange.push({
+        dttm: portfolioData[i].dttm,
+        dailyChange: dailyChange,
+      });
     }
     let portfolio = {
-      Data :portfolioData,
-      arrayOfDailyChange:arrayOfDailyChange,
-      dailyMean:dailySum / totalData,
-      dailyStandardDeviation:  dev(arrayOfDailyChange.map((eachData)=>eachData.dailyChange)),
-      cagr: (Math.pow((((dailySum/ totalData)/100)+1),365)-1)*100
-    }
-    
+      Data: portfolioData,
+      arrayOfDailyChange: arrayOfDailyChange,
+      dailyMean: dailySum / totalData,
+      dailyStandardDeviation: dev(
+        arrayOfDailyChange.map((eachData) => eachData.dailyChange),
+      ),
+      cagr: (Math.pow(dailySum / totalData / 100 + 1, 365) - 1) * 100,
+    };
+
     return portfolio;
   }
 }

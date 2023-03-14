@@ -23,6 +23,11 @@ export class NormalisedStockGeneratorController {
     return this.normalisedStockGeneratorService.getStockData(query.scripcode);
   }
   
+  @Get("/search-stock-list")
+  searchStockList( @Query() query: {searchType: string,searchField:number|string}) {
+  return this.normalisedStockGeneratorService.searchStockList(query)
+}
+
 
   @Post("/normalise-stocks")
   create() {

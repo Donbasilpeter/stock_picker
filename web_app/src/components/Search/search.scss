@@ -1,0 +1,25 @@
+.search-parent{
+    padding-right: 1rem;
+    .search-child-1{
+
+    }
+    .search-drop-down{
+        margin-bottom: 1rem;
+        width:24vw ;
+        height: 50vh;
+        overflow-y: auto;
+        position: absolute;
+        padding-left: 10px;
+        z-index: 100;  
+        .advanced-search{
+            
+            padding: 1rem 0 1rem 10px;
+            display: flex;
+        }
+        .advanced-search:hover {
+            background: #F2F2F2 0% 0% no-repeat padding-box;
+            cursor: pointer;
+
+          }
+    }
+}
