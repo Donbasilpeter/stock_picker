@@ -1,6 +1,7 @@
 import { Button, Divider, Grid, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { stockDataInterface } from "../../interfaces/props";
 import {
   addPortfolioStock,
@@ -10,21 +11,29 @@ import {
 
 export const ListPortfolioStock = ({ stockData }: stockDataInterface) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
 
   return (
     <>
          <Grid container sx={{ pl: "1rem", pt: "2rem" }}>
         <Grid item xs={6}>
           <Typography variant="h6"> Equity Name</Typography>
-          <Typography variant="body1" color="secondary">
+      
+          <div  onClick={()=>{navigate("/stock-analysis/"+stockData.scripcode)}}>
+          <Typography sx={{cursor:"pointer",textDecoration: 'underline'}} variant="body1" color="secondary">
             {stockData.Scripname}
           </Typography>
+          </div>
         </Grid>
         <Grid item xs={6}>
           <Typography variant="h6"> Equity Code</Typography>
-          <Typography variant="body1" color="secondary">
+          <div  onClick={()=>{navigate("/stock-analysis/"+stockData.scripcode)}}>
+          <Typography sx={{cursor:"pointer",textDecoration: 'underline'}} variant="body1" color="secondary">
             {stockData.scripcode}
           </Typography>
+          </div>
+
         </Grid>
       </Grid>
       <Grid container sx={{ pl: "1rem", pt: "2rem " }}>

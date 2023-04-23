@@ -58,6 +58,7 @@ const LineChart = ({
                 (data: any) => data.normalisedData
               ),
               fill: false,
+              borderWidth: 1,
               borderColor:
                 lineChartData.length === 1 ? theme.palette.primary.main : color,
               backgroundColor:
@@ -84,6 +85,8 @@ const LineChart = ({
       backgroundColor: theme.palette.secondary.main,
       color: theme.palette.primary.main,
       tension: 0.1,
+      borderWidth: 1,
+
     };
     setFormattedPortfolioData(portfolio);
   }, [portfolioData]);

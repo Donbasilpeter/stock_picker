@@ -1,16 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {  PortfolioReducer } from "../interfaces/store";
-const initialState:PortfolioReducer = {
+import { PortfolioReducer } from "../interfaces/store";
+const initialState: PortfolioReducer = {
   portfolioStocks: [],
-  portfolioStocksData:[],
-  portfolio : {
+  portfolioStocksData: [],
+  portfolio: {
     Data: [],
     arrayOfDailyChange: [],
     dailyMean: 0,
     dailyStandardDeviation: 0,
     cagr: 0,
-    stocks:[]
-  }
+    stocks: [],
+  },
+  searchResult: [],
 };
 
 const portfolioSlice = createSlice({
@@ -29,13 +30,18 @@ const portfolioSlice = createSlice({
       }
     },
     addPortfolioStocksData: (state, action) => {
-    
-      if (state.portfolioStocksData.filter((element) => element.scripcode === action.payload.scripcode  ).length <=0 ) {
+      if (
+        state.portfolioStocksData.filter(
+          (element) => element.scripcode === action.payload.scripcode
+        ).length <= 0
+      ) {
         state.portfolioStocksData.push(action.payload);
       }
     },
-    removePortfolioStocksData:  (state,action) => {
-      const index = state.portfolioStocksData.findIndex(x => x.scripcode ===action.payload);
+    removePortfolioStocksData: (state, action) => {
+      const index = state.portfolioStocksData.findIndex(
+        (x) => x.scripcode === action.payload
+      );
       if (index > -1) {
         state.portfolioStocksData.splice(index, 1);
       }
@@ -43,8 +49,18 @@ const portfolioSlice = createSlice({
     setPortfolio: (state, action) => {
       state.portfolio = action.payload;
     },
+    setSearchResult: (state, action) => {
+      state.searchResult = action.payload;
+    },
   },
 });
 
-export const { addPortfolioStock,removePortfolioStock,addPortfolioStocksData, removePortfolioStocksData, setPortfolio } = portfolioSlice.actions;
+export const {
+  addPortfolioStock,
+  removePortfolioStock,
+  addPortfolioStocksData,
+  removePortfolioStocksData,
+  setPortfolio,
+  setSearchResult,
+} = portfolioSlice.actions;
 export default portfolioSlice.reducer;

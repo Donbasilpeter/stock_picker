@@ -40,7 +40,7 @@ export interface PortfolioReducer {
 portfolioStocks:number[]
 portfolioStocksData:SelectedStockData[],
 portfolio:Portfolio
-
+searchResult:any[]
 }
 
 export interface Portfolio {
