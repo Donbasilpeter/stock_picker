@@ -1,6 +1,7 @@
 import axios from "axios";
+const STOCK_PICKER_API  =  import.meta.env.VITE_STOCK_PICKER_API
 export const  getNormalisedStockSdCagrValues = ()=>{
-const url = "http://localhost:3000/normalisedStock/get-normalised-data"
+const url = STOCK_PICKER_API + "/normalisedStock/get-normalised-data"
 return axios.get(url).then((data)=>{
     if(data.data){
         return {status:"sucess", data: data.data}
@@ -14,7 +15,7 @@ return axios.get(url).then((data)=>{
 
 
 export const  getSelectedStockData = (selectedStock:number)=>{
-    const url = "http://localhost:3000/normalisedStock/get-stock-data"
+    const url = STOCK_PICKER_API +"/normalisedStock/get-stock-data"
     const data = {scripcode:selectedStock}
     return axios.get(url,{params:data}).then((data:any)=>{
         if(data.data[0]){
@@ -28,7 +29,7 @@ export const  getSelectedStockData = (selectedStock:number)=>{
     }
 
     export const  searchStockList = (searchType: string,searchField:number|string)=>{
-        const url = "http://localhost:3000/normalisedStock/search-stock-list"
+        const url = STOCK_PICKER_API + "/normalisedStock/search-stock-list"
         const data = {searchType: searchType,searchField:searchField}
         return axios.get(url,{params:data}).then((data:any)=>{
             if(data.data[0]){
@@ -42,7 +43,7 @@ export const  getSelectedStockData = (selectedStock:number)=>{
         }
 
     export const  generatePF =  (selectedStocks:number[])=>{
-        const url = "http://localhost:3000/normalisedStock/generate-portfolio"
+        const url = STOCK_PICKER_API + "/normalisedStock/generate-portfolio"
         return  axios.post(url,{data:{scripcodeArray:selectedStocks}}).then((data:any)=>{
 
             if(data.data){
