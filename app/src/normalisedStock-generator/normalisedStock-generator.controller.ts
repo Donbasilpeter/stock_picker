@@ -3,8 +3,9 @@ import { query } from 'express';
 import { Input } from 'gpu.js';
 import { AnalyseNormalisedStockByCAGRInterface, AnalyseNormalisedStockByCutInterface, AnalyseNormalisedStockInterface } from 'src/Interfaces/stock.interface';
 import { NormalisedStockGeneratorService } from './normalisedStock-generator.service';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-
+@ApiTags('API for Calculations') //api tag for swagger documentation
 @Controller('normalisedStock')
 export class NormalisedStockGeneratorController {
   constructor(private readonly normalisedStockGeneratorService: NormalisedStockGeneratorService) {}
@@ -28,8 +29,16 @@ export class NormalisedStockGeneratorController {
   return this.normalisedStockGeneratorService.searchStockList(query)
 }
 
-
+  @ApiTags('API for Data Setup') //api tag for swagger documentation
   @Post("/normalise-stocks")
+    //swagger config for this api
+    @ApiOperation({
+      summary:"This API allows you to reset the entire normalised data in the Database. ",
+      description: `
+      Use it carefully!
+       It fetchs stored stock data form local database and normalise the data and store in another location. 
+       It also add other analitics like daily standard deviation, daily mean etc.`,
+    })
   create() {
     return this.normalisedStockGeneratorService.createNormalisedStock();
   }
