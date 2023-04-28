@@ -5,7 +5,8 @@ import {
   AnalyseNormalisedStockInterface,
 } from 'src/Interfaces/stock.interface';
 import { NormalisedStockGeneratorService } from './normalisedStock-generator.service';
-import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { portfolioGeneratorSample } from 'src/scripcode';
 
 @Controller('normalisedStock')
 export class NormalisedStockGeneratorController {
@@ -83,6 +84,29 @@ export class NormalisedStockGeneratorController {
   
   @ApiTags('API for Calculations') //api tag for swagger documentation
   @Post('/generate-portfolio')
+  @ApiOperation({
+    summary:
+      'This API allows you to generate a portfolio.',
+    description: `
+        This API generates and return a portfolio from given scripcodes with metadata`,
+  })
+  @ApiConsumes('application/json')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          items: { type: 'array' },
+          description: 'An array of script codes',
+          example:portfolioGeneratorSample
+        },
+      },
+
+      required: ['scripCodeArray'],
+    },
+  })
+
   generatePortfolio(@Body() query: { data: { scripcodeArray: number[] } }) {
     return this.normalisedStockGeneratorService.generatePortfolio(
       query.data.scripcodeArray,
