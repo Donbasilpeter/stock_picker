@@ -11,13 +11,14 @@ export class NormalisedStockGeneratorController {
   constructor(private readonly normalisedStockGeneratorService: NormalisedStockGeneratorService) {}
 
   @Get("/get-normalised-data")
+  @ApiOperation({
+    summary:"This API allows you to fetch all the normalised stock metadata",
+  })
   getnormalisedData() {
     return this.normalisedStockGeneratorService.getnormalisedData();
   }
-  @Post("/generate-portfolio")
-  generatePortfolio(@Body() query: {data:{scripcodeArray:number[]}}) {
-    return this.normalisedStockGeneratorService.generatePortfolio(query.data.scripcodeArray);
-  }
+  
+
 
     @Get("/get-stock-data")
     getStockData( @Query() query: {scripcode: number}) {
@@ -43,6 +44,11 @@ export class NormalisedStockGeneratorController {
     return this.normalisedStockGeneratorService.createNormalisedStock();
   }
 
+    @Post("/generate-portfolio")
+  generatePortfolio(@Body() query: {data:{scripcodeArray:number[]}}) {
+    return this.normalisedStockGeneratorService.generatePortfolio(query.data.scripcodeArray);
+  }
+
   @Post("/don-index")
   analyseDonIntex(@Body() resetStockInput: AnalyseNormalisedStockInterface) {
     return this.normalisedStockGeneratorService.analyseDonIntex(resetStockInput);
@@ -65,6 +71,7 @@ export class NormalisedStockGeneratorController {
     return this.normalisedStockGeneratorService.analyseByCagr(analyseByCagr);
 
   }
+
 
   
 }
