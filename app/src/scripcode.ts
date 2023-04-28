@@ -1,6 +1,6 @@
 
-    let x = {
-        "Security Code": [
+    export const  scripCodes = {
+        securityCode: [
             "500002",
             "500003",
             "500008",
