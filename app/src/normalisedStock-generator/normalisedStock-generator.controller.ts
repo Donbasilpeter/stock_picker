@@ -9,13 +9,12 @@ import {
 import { NormalisedStockGeneratorService } from './normalisedStock-generator.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('API for Calculations') //api tag for swagger documentation
 @Controller('normalisedStock')
 export class NormalisedStockGeneratorController {
   constructor(
     private readonly normalisedStockGeneratorService: NormalisedStockGeneratorService,
   ) {}
-
+  @ApiTags('API for Calculations') //api tag for swagger documentation
   @Get('/get-normalised-data')
   @ApiOperation({
     summary: 'This API allows you to fetch all the normalised stock metadata',
@@ -24,11 +23,13 @@ export class NormalisedStockGeneratorController {
     return this.normalisedStockGeneratorService.getnormalisedData();
   }
 
+  @ApiTags('API for Calculations') //api tag for swagger documentation
   @Get('/get-stock-data')
   getStockData(@Query() query: { scripcode: number }) {
     return this.normalisedStockGeneratorService.getStockData(query.scripcode);
   }
-
+  
+  @ApiTags('API for Calculations') //api tag for swagger documentation
   @Get('/search-stock-list')
   searchStockList(
     @Query() query: { searchType: string; searchField: number | string },
@@ -50,25 +51,30 @@ export class NormalisedStockGeneratorController {
   create() {
     return this.normalisedStockGeneratorService.createNormalisedStock();
   }
-
+  
+  @ApiTags('API for Calculations') //api tag for swagger documentation
   @Post('/generate-portfolio')
   generatePortfolio(@Body() query: { data: { scripcodeArray: number[] } }) {
     return this.normalisedStockGeneratorService.generatePortfolio(
       query.data.scripcodeArray,
     );
   }
-
+  
+  @ApiTags('API for Calculations') //api tag for swagger documentation
   @Post('/don-index')
   analyseDonIntex(@Body() resetStockInput: AnalyseNormalisedStockInterface) {
     return this.normalisedStockGeneratorService.analyseDonIntex(
       resetStockInput,
     );
-  }
+  }  
+
+  @ApiTags('API for Calculations') //api tag for swagger documentation
   @Post('analyse-by-sorting-SD')
   analyseBySortingSD() {
     return this.normalisedStockGeneratorService.analyseBySortingSD();
   }
-
+  
+  @ApiTags('API for Calculations') //api tag for swagger documentation
   @Post('analyse-by-sort-cut-SD')
   analyseBySortAndCut(
     @Body() AnalyseNormalisedStockByCut: AnalyseNormalisedStockByCutInterface,
@@ -77,7 +83,8 @@ export class NormalisedStockGeneratorController {
       AnalyseNormalisedStockByCut,
     );
   }
-
+  
+  @ApiTags('API for Calculations') //api tag for swagger documentation
   @Post('analyse-by-CAGR')
   analyseByCagr(@Body() analyseByCagr: AnalyseNormalisedStockByCAGRInterface) {
     return this.normalisedStockGeneratorService.analyseByCagr(analyseByCagr);
