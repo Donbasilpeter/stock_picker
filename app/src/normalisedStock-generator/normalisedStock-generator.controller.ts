@@ -1,19 +1,18 @@
-import { Controller, Post, Body, Get, Param, Query, Req } from '@nestjs/common';
-import { query } from 'express';
-import { Input } from 'gpu.js';
+import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import {
   AnalyseNormalisedStockByCAGRInterface,
   AnalyseNormalisedStockByCutInterface,
   AnalyseNormalisedStockInterface,
 } from 'src/Interfaces/stock.interface';
 import { NormalisedStockGeneratorService } from './normalisedStock-generator.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 @Controller('normalisedStock')
 export class NormalisedStockGeneratorController {
   constructor(
     private readonly normalisedStockGeneratorService: NormalisedStockGeneratorService,
   ) {}
+
   @ApiTags('API for Calculations') //api tag for swagger documentation
   @Get('/get-normalised-data')
   @ApiOperation({
@@ -25,12 +24,42 @@ export class NormalisedStockGeneratorController {
 
   @ApiTags('API for Calculations') //api tag for swagger documentation
   @Get('/get-stock-data')
+  @ApiOperation({
+    summary: 'This API allows you to fetch stock data by scriptcode',
+  })
+  @ApiQuery({
+    name: 'scripcode',
+    description: 'Script code of the stock',
+    type: 'number',
+    required: true,
+    example: 500209,
+  })
   getStockData(@Query() query: { scripcode: number }) {
     return this.normalisedStockGeneratorService.getStockData(query.scripcode);
   }
   
   @ApiTags('API for Calculations') //api tag for swagger documentation
   @Get('/search-stock-list')
+  @ApiOperation({
+    summary: 'This API allows you to fetch stock by name, CAGR, SD',
+    description: `You could filter out the stocks by entering a keyword that matches
+    a string (for searching name), or stocks whose SD(risk factor) is below a particular
+    value, or stocks whose CAGR is above a particular value.`,
+  })
+  @ApiQuery({
+    name: 'searchField',
+    description: 'keyword',
+    type: 'string',
+    required: true,
+    example: "TCS",
+  })
+  @ApiQuery({
+    name: 'searchType',
+    description: 'select between CAGR, SD,Name ',
+    type: 'string',
+    required: true,
+    example: "Name",
+  })
   searchStockList(
     @Query() query: { searchType: string; searchField: number | string },
   ) {
