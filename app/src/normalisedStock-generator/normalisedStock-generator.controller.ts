@@ -112,9 +112,35 @@ export class NormalisedStockGeneratorController {
       query.data.scripcodeArray,
     );
   }
+
   
   @ApiTags('API for Calculations') //api tag for swagger documentation
   @Post('/don-index')
+  @ApiOperation({
+    summary:
+      'This API allows you to find best stocks based on don Index',
+    description: `
+        This API assigns a index value for all stocks and sort the stocks
+        based on the index. the index is based on the coeffient value given. 
+        its value can be varied from 1 to infinity.higher the value more importance is 
+        given to the daily mean and less importance to risk factor.increase the value 
+        if you cannot handle higher risks`,
+  })
+  @ApiConsumes('application/json')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        coefficent: {
+          type: 'number',
+          description: 'enter the coefficent value',
+          example:1
+        },
+      },
+
+      required: ['scripCodeArray'],
+    },
+  })
   analyseDonIntex(@Body() resetStockInput: AnalyseNormalisedStockInterface) {
     return this.normalisedStockGeneratorService.analyseDonIntex(
       resetStockInput,
