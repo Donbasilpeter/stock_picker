@@ -153,6 +153,9 @@ export class NormalisedStockGeneratorService {
     pfSize = 20,
   }: AnalyseNormalisedStockInterface) {
     return this.NormalisedStockModel.find({})
+    .select(
+      'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
+    )
       .lean()
       .then((normalizedStocks) => {
         let result = normalizedStocks
