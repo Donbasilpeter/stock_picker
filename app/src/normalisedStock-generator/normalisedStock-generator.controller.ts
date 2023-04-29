@@ -124,7 +124,8 @@ export class NormalisedStockGeneratorController {
         based on the index. the index is based on the coeffient value given. 
         its value can be varied from 1 to infinity.higher the value more importance is 
         given to the daily mean and less importance to risk factor.increase the value 
-        if you cannot handle higher risks`,
+        if you cannot handle higher risks.The coeffient deterimines your risk taking
+        capabilities`,
   })
   @ApiConsumes('application/json')
   @ApiBody({
