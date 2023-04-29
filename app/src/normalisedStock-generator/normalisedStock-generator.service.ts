@@ -79,7 +79,9 @@ export class NormalisedStockGeneratorService {
           'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
         );
     else if (searchType === 'SD' && !isNaN(Number(searchField)))
-      return this.NormalisedStockModel.find({ dailyStandardDeviation: { $lt: searchField } })
+      return this.NormalisedStockModel.find({
+        dailyStandardDeviation: { $lt: searchField },
+      })
         .sort({ cagr: -1 })
         .limit(10)
         .select(
@@ -153,6 +155,9 @@ export class NormalisedStockGeneratorService {
     pfSize = 20,
   }: AnalyseNormalisedStockInterface) {
     return this.NormalisedStockModel.find({})
+      .select(
+        'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
+      )
       .lean()
       .then((normalizedStocks) => {
         let result = normalizedStocks
