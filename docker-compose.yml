@@ -3,7 +3,7 @@ services:
   react-app:
     build: ./web_app
     ports: 
-      - "5173:5173"
+      - "8080:8080"
     networks:
       - mern-app
   api-server:
