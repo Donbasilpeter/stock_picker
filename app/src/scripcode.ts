@@ -1,6 +1,12 @@
 
-    let x = {
-        "Security Code": [
+  export const portfolioGeneratorSample ={
+    "scripcodeArray": [
+        500790,
+        500820,
+    ]
+  }
+    export const  scripCodes = {
+        securityCode: [
             "500002",
             "500003",
             "500008",
