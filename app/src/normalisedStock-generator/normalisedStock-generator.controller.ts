@@ -148,14 +148,38 @@ export class NormalisedStockGeneratorController {
     );
   }  
 
-  @ApiTags('API for Calculations') //api tag for swagger documentation
-  @Post('analyse-by-sorting-SD')
-  analyseBySortingSD() {
-    return this.normalisedStockGeneratorService.analyseBySortingSD();
-  }
+  // @ApiTags('API for Calculations') //api tag for swagger documentation
+  // @Post('analyse-by-sorting-SD')
+  // analyseBySortingSD() {
+  //   return this.normalisedStockGeneratorService.analyseBySortingSD();
+  // }
   
   @ApiTags('API for Calculations') //api tag for swagger documentation
   @Post('analyse-by-sort-cut-SD')
+  @ApiOperation({
+    summary:
+      'This API allows you to filter out stocks based on SD and CAGR',
+    description: `
+        This API lists all stocks that has lower SD and higher CAGR than specified values`,
+  })
+  @ApiConsumes('application/json')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        SDcut: {
+          type: 'number',
+          description: 'enter the SD limit',
+          example:1.5
+        },
+        CAGRcut: {
+          type: 'number',
+          description: 'enter the CAGR limit',
+          example:20
+        },
+      },
+    },
+  })
   analyseBySortAndCut(
     @Body() AnalyseNormalisedStockByCut: AnalyseNormalisedStockByCutInterface,
   ) {
@@ -166,6 +190,30 @@ export class NormalisedStockGeneratorController {
   
   @ApiTags('API for Calculations') //api tag for swagger documentation
   @Post('analyse-by-CAGR')
+  @ApiOperation({
+    summary:
+      'This API allows you to filter out stocks based on PFsize and CAGR',
+    description: `
+        This API lists top specified no of stocks that has higher CAGR than specified value`,
+  })
+  @ApiConsumes('application/json')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        pfSize: {
+          type: 'number',
+          description: 'enter the PF size',
+          example:12
+        },
+        CAGRcut: {
+          type: 'number',
+          description: 'enter the CAGR limit',
+          example:10
+        },
+      },
+    },
+  })
   analyseByCagr(@Body() analyseByCagr: AnalyseNormalisedStockByCAGRInterface) {
     return this.normalisedStockGeneratorService.analyseByCagr(analyseByCagr);
   }
