@@ -118,14 +118,12 @@ const LineChart = ({
           pinch: {
             enabled: true,
           },
-          mode: "xy",
-          limits: {
-            y: { max: 1000 },
-          },
+          mode: "x",
+
         },
         pan: {
           enabled: true,
-          mode: "xy",
+          mode: "x",
         },
       },
     },
