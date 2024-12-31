@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   FormControl,
   OutlinedInput,
@@ -29,11 +29,7 @@ const Search = ({
   dropDownValues,
 }: SearchProps) => {
   const [dropDown, setDropDown] = useState(false);
-  const onFocus = () => setDropDown(true);
-  const onBlur = () =>setTimeout(() => {
-    setDropDown(false)
-  }, 1000);
-  const [searchvalue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState("");
   const portfolioStocks = useSelector(
     (state: State) => state.portfolio.portfolioStocks
   );
@@ -41,10 +37,26 @@ const Search = ({
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const onFocus = () => setDropDown(true);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setDropDown(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
-      <div className="search-parent">
+      <div className="search-parent" ref={dropdownRef}>
         <div className="search-child-1">
           <FormControl
             fullWidth
@@ -60,9 +72,8 @@ const Search = ({
                 setSearchField(e.target.value);
                 setSearchValue(e.target.value);
               }}
-              value={searchvalue}
+              value={searchValue}
               onFocus={onFocus}
-              onBlur={onBlur}
               startAdornment={
                 <InputAdornment position="start">
                   <SearchIcon />
@@ -113,7 +124,7 @@ const Search = ({
             />
           </FormControl>
         </div>
-        <div style={{ display: dropDown ? "flex" : "none" }}>
+        {dropDown && (
           <div className="search-drop-down">
             <Card sx={{ mb: 2 }}>
               <CardContent>
@@ -125,47 +136,42 @@ const Search = ({
                 </Typography>
                 {dropDownValues?.map((eachValue: any) => (
                   <Box key={eachValue.scripcode} sx={{ mt: 2 }}>
-                       <Grid container sx={{ mb: 1 }}>
+                    <Grid container sx={{ mb: 1 }}>
                       <Grid item xs={6}>
-                      <Typography
-                      variant="body1"
-                      sx={{ textDecoration: "underline", cursor: "pointer" }}
-                      color="primary"
-                      onClick={() => {
-                        navigate("/stock-analysis/" + eachValue.scripcode);
-                      }}
-                    >
-                      {eachValue.Scripname}
-                    </Typography>
+                        <Typography
+                          variant="body1"
+                          sx={{ textDecoration: "underline", cursor: "pointer" }}
+                          color="primary"
+                          onClick={() => {
+                            navigate("/stock-analysis/" + eachValue.scripcode);
+                          }}
+                        >
+                          {eachValue.Scripname}
+                        </Typography>
                       </Grid>
                       <Grid item xs={3}>
-                      {!portfolioStocks.includes(eachValue.scripcode) ? (
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  dispatch(addPortfolioStock(eachValue.scripcode));
-                }}
-              >
-                Add
-              </Button>
-            ) : (
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  dispatch(
-                    removePortfolioStocksData(eachValue.scripcode)
-                  );
-                  dispatch(removePortfolioStock(eachValue.scripcode));
-                }}
-              >
-                Remove
-              </Button>
-            )}
+                        {!portfolioStocks.includes(eachValue.scripcode) ? (
+                          <Button
+                            variant="outlined"
+                            onClick={() => {
+                              dispatch(addPortfolioStock(eachValue.scripcode));
+                            }}
+                          >
+                            Add
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outlined"
+                            onClick={() => {
+                              dispatch(removePortfolioStocksData(eachValue.scripcode));
+                              dispatch(removePortfolioStock(eachValue.scripcode));
+                            }}
+                          >
+                            Remove
+                          </Button>
+                        )}
                       </Grid>
-                      </Grid>
-
-            
-
+                    </Grid>
                     <Typography variant="caption" sx={{ fontSize: 8 }}>
                       {eachValue.scripcode}
                     </Typography>
@@ -197,17 +203,9 @@ const Search = ({
                   </Box>
                 ))}
               </CardContent>
-              <Divider />
-
-              {/* <div className="advanced-search" onClick={()=>{navigate('/private/advancedSearch')}}>
-        <SearchIcon sx={{ fontSize: "18px"}}/>   
-          <Typography variant="body2" sx={{pl:1}}>
-          Advanced Search
-     </Typography>
-      </div> */}
             </Card>
           </div>
-        </div>
+        )}
       </div>
     </>
   );
