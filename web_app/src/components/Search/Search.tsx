@@ -21,13 +21,25 @@ import { SearchProps } from "../../interfaces/props";
 import { addPortfolioStock, removePortfolioStock, removePortfolioStocksData } from "../../reducers/portfolio";
 import { useDispatch, useSelector } from "react-redux";
 import { State } from "../../interfaces/store";
+import { searchStockList } from "../../services/apis";
+import { setSearchResult} from "../../reducers/portfolio";
 
-const Search = ({
-  setSearchField,
-  dropDownArray,
-  setSearchColumn,
-  dropDownValues,
-}: SearchProps) => {
+
+const Search = () => {
+
+  const [searchField, setSearchField] = useState("");
+  const [searchColumn, setSearchColumn] = useState("Name");
+  const [dropDownArray, setDropDownArray] = useState(["Name","CAGR","SD"]);
+  const searchResult = useSelector((state: State) => state.portfolio.searchResult);
+    useEffect(() => {
+      if(searchField&&searchColumn)
+      searchStockList(searchColumn,searchField)
+      .then((data)=>{data.status ==="sucess" && dispatch(setSearchResult(data.data))})
+    }, [searchField,searchColumn]);
+  
+  
+
+
   const [dropDown, setDropDown] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const portfolioStocks = useSelector(
@@ -134,7 +146,7 @@ const Search = ({
                 >
                   search results
                 </Typography>
-                {dropDownValues?.map((eachValue: any) => (
+                {searchResult?.map((eachValue: any) => (
                   <Box key={eachValue.scripcode} sx={{ mt: 2 }}>
                     <Grid container sx={{ mb: 1 }}>
                       <Grid item xs={6}>

@@ -5,13 +5,10 @@ import { useNavigate } from "react-router-dom";
 import { State } from "../../interfaces/store";
 
 import {
-  addPortfolioStock,
-  removePortfolioStock,
   addPortfolioStocksData,
   setPortfolio,
-  setSearchResult,
 } from "../../reducers/portfolio";
-import { generatePF, getSelectedStockData, searchStockList } from "../../services/apis";
+import { generatePF, getSelectedStockData } from "../../services/apis";
 
 import LineChart from "../line-chart/LineChart";
 import { ListPortfolioStock } from "../listPortfolioStock/ListPortfolioStock";
@@ -19,9 +16,6 @@ import Search from "../Search/Search";
 const PortfolioAnalysis: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [searchField, setSearchField] = useState("");
-  const [searchColumn, setSearchColumn] = useState("Name");
-  const [dropDownArray, setDropDownArray] = useState(["Name","CAGR","SD"]);
 
 
   const portfolioStocks = useSelector(
@@ -31,7 +25,6 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
     (state: State) => state.portfolio.portfolioStocksData
   );
   const portfolio = useSelector((state: State) => state.portfolio.portfolio);
-  const searchResult = useSelector((state: State) => state.portfolio.searchResult);
 
 
   useEffect(() => {
@@ -53,13 +46,6 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
       generatePortfolio();
     }
   }, [portfolioStocks]);
-  useEffect(() => {
-    if(searchField&&searchColumn)
-    searchStockList(searchColumn,searchField)
-    .then((data)=>{data.status ==="sucess" && dispatch(setSearchResult(data.data))})
-  }, [searchField,searchColumn]);
-
-
 
   
 
@@ -81,12 +67,7 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
       }}
     >
       <Grid item xs={3}>
-      <Search
-            dropDownValues={searchResult}
-          setSearchField={setSearchField}
-          dropDownArray={dropDownArray}
-          setSearchColumn={setSearchColumn}
-        ></Search>
+      <Search></Search>
         <Box sx={{ overflow: "auto", height: "76vh",mt:"2vh" }}>
           {portfolioStocksData?.map((eachStock) => {
             return (
@@ -97,19 +78,6 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
             );
           })}
         </Box>
-
-        {/* <Grid container justifyContent="center" sx={{ pt: 5 }}>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              generatePortfolio();
-            }}
-          >
-            {portfolio.stocks.length === 0
-              ? "Generate Portfolio"
-              : "Regenerate Portfolio"}
-          </Button>
-        </Grid> */}
       </Grid>
       <Grid item xs={9}>
         <Box
