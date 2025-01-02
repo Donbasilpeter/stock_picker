@@ -22,23 +22,39 @@ import { addPortfolioStock, removePortfolioStock, removePortfolioStocksData } fr
 import { useDispatch, useSelector } from "react-redux";
 import { State } from "../../interfaces/store";
 import { searchStockList } from "../../services/apis";
-import { setSearchResult} from "../../reducers/portfolio";
+import { setSearchResult } from "../../reducers/portfolio";
+import { IconButton } from "@mui/material";
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 
 
 const Search = () => {
-
   const [searchField, setSearchField] = useState("");
   const [searchColumn, setSearchColumn] = useState("Name");
-  const [dropDownArray, setDropDownArray] = useState(["Name","CAGR","SD"]);
+  const dropDownArray = ["Name", "CAGR", "SD"]
+  const [page, setPage] = useState(1); // Track the current page number
   const searchResult = useSelector((state: State) => state.portfolio.searchResult);
-    useEffect(() => {
-      if(searchField&&searchColumn)
-      searchStockList(searchColumn,searchField)
-      .then((data)=>{data.status ==="sucess" && dispatch(setSearchResult(data.data))})
-    }, [searchField,searchColumn]);
-  
-  
 
+  const prevSearchField = useRef(searchField);
+
+  useEffect(() => {
+    if (searchField !== prevSearchField.current) {
+      // Reset page to 1 when searchField has changed
+      setPage(1);
+      prevSearchField.current = searchField; // Update the reference to the new searchField
+    }
+  
+    if (searchField) {
+      searchStockList(searchColumn, searchField, page) // Use the current page value
+        .then((data) => {
+          if (data.status === "success") {
+            dispatch(setSearchResult(data.data));
+          }
+        });
+    } else {
+      dispatch(setSearchResult([]));
+    }
+  }, [searchField, page]);
 
   const [dropDown, setDropDown] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -48,7 +64,6 @@ const Search = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const onFocus = () => setDropDown(true);
@@ -65,6 +80,10 @@ const Search = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handlePagination = (newPage: number) => {
+    setPage(newPage); // Update the page number
+  };
 
   return (
     <>
@@ -136,16 +155,10 @@ const Search = () => {
             />
           </FormControl>
         </div>
-        {dropDown && (
+        {dropDown && searchResult.length!=0 && (
           <div className="search-drop-down">
             <Card sx={{ mb: 2 }}>
               <CardContent>
-                <Typography
-                  variant="caption"
-                  sx={{ paddingBottom: 10, fontSize: 8 }}
-                >
-                  search results
-                </Typography>
                 {searchResult?.map((eachValue: any) => (
                   <Box key={eachValue.scripcode} sx={{ mt: 2 }}>
                     <Grid container sx={{ mb: 1 }}>
@@ -206,7 +219,7 @@ const Search = () => {
                           {Math.round(
                             (eachValue.dailyStandardDeviation +
                               Number.EPSILON) *
-                              100
+                            100
                           ) / 100}
                         </Typography>
                       </Grid>
@@ -214,8 +227,30 @@ const Search = () => {
                     <Divider />
                   </Box>
                 ))}
+
+                {/* Pagination Controls */}
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                  <IconButton
+                    onClick={() => handlePagination(page - 1)}
+                    disabled={page <= 1}
+                  >
+                    <NavigateBeforeIcon />
+                  </IconButton>
+                  <Typography variant="body2" sx={{ display: "inline", margin:"auto" }}>
+         {page}
+      </Typography>
+                 <IconButton
+                    onClick={() => handlePagination(page + 1)}
+                    disabled={searchResult.length!=10}
+
+                  >
+                    <NavigateNextIcon />
+                  </IconButton>
+
+                </Box>
               </CardContent>
             </Card>
+
           </div>
         )}
       </div>

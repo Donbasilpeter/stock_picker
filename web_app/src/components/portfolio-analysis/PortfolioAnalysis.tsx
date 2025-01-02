@@ -13,6 +13,7 @@ import { generatePF, getSelectedStockData } from "../../services/apis";
 import LineChart from "../line-chart/LineChart";
 import { ListPortfolioStock } from "../listPortfolioStock/ListPortfolioStock";
 import Search from "../Search/Search";
+import EmptyPortfolio from "../empty-portfolio/EmptyPortfolio";
 const PortfolioAnalysis: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
   };
 
   return (
-    <>{  portfolioStocks.length>0 &&  portfolioStocksData.length>0 &&  <Grid
+    <> <Grid
       container
       sx={{
         pb: "1rem",
@@ -80,7 +81,7 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
         </Box>
       </Grid>
       <Grid item xs={9}>
-        <Box
+        {  (portfolioStocks.length>0 &&  portfolioStocksData.length>0) ? (<><Box
           position={"absolute"}
           sx={{ ml: 10, mt: 7, height: "10rem", width: "15rem" }}
         >
@@ -129,9 +130,9 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
           lineChartData={portfolioStocksData}
           portfolioData={portfolio}
           isPortfolio={true}
-        />
+        /> </>): <EmptyPortfolio/>}
       </Grid>
-    </Grid>}
+    </Grid>
     </>
 
   );

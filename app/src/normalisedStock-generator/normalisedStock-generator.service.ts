@@ -62,32 +62,40 @@ export class NormalisedStockGeneratorService {
       });
   }
 
-  searchStockList({ searchField, searchType }) {
-    if (searchType === 'Name')
-      return this.NormalisedStockModel.find({
-        Scripname: { $regex: searchField, $options: 'i' },
-      })
-        .limit(10)
-        .select(
-          'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
-        );
-    else if (searchType === 'CAGR' && !isNaN(Number(searchField)))
-      return this.NormalisedStockModel.find({ cagr: { $gt: searchField } })
-        .sort({ dailyStandardDeviation: 1 })
-        .limit(10)
-        .select(
-          'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
-        );
-    else if (searchType === 'SD' && !isNaN(Number(searchField)))
-      return this.NormalisedStockModel.find({
-        dailyStandardDeviation: { $lt: searchField },
-      })
-        .sort({ cagr: -1 })
-        .limit(10)
-        .select(
-          'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
-        );
+// Service Implementation
+searchStockList({ searchField, searchType, page }) {
+  const itemsPerPage = 10; // Number of items per page
+  const skip = (page - 1) * itemsPerPage; // Calculate the number of items to skip
+
+  if (searchType === 'Name') {
+    return this.NormalisedStockModel.find({
+      Scripname: { $regex: searchField, $options: 'i' },
+    })
+      .skip(skip)
+      .limit(itemsPerPage)
+      .select(
+        'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
+      );
+  } else if (searchType === 'CAGR' && !isNaN(Number(searchField))) {
+    return this.NormalisedStockModel.find({ cagr: { $gt: searchField } })
+      .sort({ dailyStandardDeviation: 1 })
+      .skip(skip)
+      .limit(itemsPerPage)
+      .select(
+        'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
+      );
+  } else if (searchType === 'SD' && !isNaN(Number(searchField))) {
+    return this.NormalisedStockModel.find({
+      dailyStandardDeviation: { $lt: searchField },
+    })
+      .sort({ cagr: -1 })
+      .skip(skip)
+      .limit(itemsPerPage)
+      .select(
+        'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
+      );
   }
+}
 
   createNormalisedStock() {
     return this.NormalisedStockModel.collection

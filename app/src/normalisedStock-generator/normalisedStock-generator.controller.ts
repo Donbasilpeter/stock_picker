@@ -39,30 +39,37 @@ export class NormalisedStockGeneratorController {
     return this.normalisedStockGeneratorService.getStockData(query.scripcode);
   }
   
-  @ApiTags('API for Calculations') //api tag for swagger documentation
+  @ApiTags('API for Calculations') // API tag for Swagger documentation
   @Get('/search-stock-list')
   @ApiOperation({
     summary: 'This API allows you to fetch stock by name, CAGR, SD',
     description: `You could filter out the stocks by entering a keyword that matches
-    a string (for searching name), or stocks whose SD(risk factor) is below a particular
-    value, or stocks whose CAGR is above a particular value.`,
+      a string (for searching name), or stocks whose SD (risk factor) is below a particular
+      value, or stocks whose CAGR is above a particular value.`,
   })
   @ApiQuery({
     name: 'searchField',
-    description: 'keyword',
+    description: 'Keyword for filtering stocks',
     type: 'string',
     required: true,
-    example: "TCS",
+    example: 'TCS',
   })
   @ApiQuery({
     name: 'searchType',
-    description: 'select between CAGR, SD,Name ',
+    description: 'Filter type: CAGR, SD, or Name',
     type: 'string',
     required: true,
-    example: "Name",
+    example: 'Name',
+  })
+  @ApiQuery({
+    name: 'page',
+    description: 'Page number for pagination',
+    type: 'number',
+    required: true,
+    example: 1,
   })
   searchStockList(
-    @Query() query: { searchType: string; searchField: number | string },
+    @Query() query: { searchType: string; searchField: number | string; page: number },
   ) {
     return this.normalisedStockGeneratorService.searchStockList(query);
   }
