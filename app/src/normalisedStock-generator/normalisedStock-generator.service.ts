@@ -52,8 +52,17 @@ export class NormalisedStockGeneratorService {
         'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation normalisedData',
       )
       .then((selectedStocks: NormalisedStockDocument[]) => {
-        let portfolio = this.genPortfolio(selectedStocks);
-        portfolio['stocks'] = scripcodeArray;
+        const portfolio = this.genPortfolio(selectedStocks);
+        portfolio["stocks"] = scripcodeArray;
+      
+        const { dailyMean, Data: data } = portfolio;
+        const growthFactor = 1 + dailyMean / 100;
+        let prev = data[0].portfolioValue;
+      
+        portfolio["Ideal"] = data.map((each, index) => {
+          const value = index === 0 ? prev : (prev *= growthFactor);
+          return { value, dttm: each.dttm };
+        });
         return portfolio;
       })
       .catch((err) => {
