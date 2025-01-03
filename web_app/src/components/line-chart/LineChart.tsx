@@ -81,7 +81,7 @@ const LineChart = ({
                 lineChartData.length === 1 ? theme.palette.primary.main : color,
 
               tension: 0.1,
-              hidden: true,
+              hidden: lineChartData.length!=1 ,
             };
           })
         : [];

@@ -336,11 +336,11 @@ searchStockList({ searchField, searchType, page }) {
       portfolioStocks: arrayForPortfolio,
       Data: portfolioData,
       arrayOfDailyChange: arrayOfDailyChange,
-      dailyMean: dailySum / totalData,
+      dailyMean: dailySum / (totalData-1),
       dailyStandardDeviation: dev(
         arrayOfDailyChange.map((eachData) => eachData.dailyChange),
       ),
-      cagr: (Math.pow(dailySum / totalData / 100 + 1, 365) - 1) * 100,
+      cagr: (Math.pow(dailySum / (totalData-1) / 100 + 1, 365) - 1) * 100,
     };
 
     return portfolio;
@@ -378,11 +378,11 @@ searchStockList({ searchField, searchType, page }) {
     let portfolio = {
       Data: portfolioData,
       arrayOfDailyChange: arrayOfDailyChange,
-      dailyMean: dailySum / totalData,
+      dailyMean: dailySum / (totalData-1),
       dailyStandardDeviation: dev(
         arrayOfDailyChange.map((eachData) => eachData.dailyChange),
       ),
-      cagr: (Math.pow(dailySum / totalData / 100 + 1, 365) - 1) * 100,
+      cagr: (Math.pow(dailySum / (totalData-1) / 100 + 1, 365) - 1) * 100,
     };
 
     return portfolio;
