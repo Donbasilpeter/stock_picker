@@ -13,5 +13,5 @@ export default () => ({
       "Referrer-Policy": "strict-origin-when-cross-origin"
         },
   },
-  bseBaseUrl: 'https://api.bseindia.com/BseIndiaAPI/api/StockReachGraph/w',
+  bseBaseUrl: process.env.BSE_API,
 });

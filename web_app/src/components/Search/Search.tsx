@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   FormControl,
   OutlinedInput,
@@ -21,30 +21,73 @@ import { SearchProps } from "../../interfaces/props";
 import { addPortfolioStock, removePortfolioStock, removePortfolioStocksData } from "../../reducers/portfolio";
 import { useDispatch, useSelector } from "react-redux";
 import { State } from "../../interfaces/store";
+import { searchStockList } from "../../services/apis";
+import { setSearchResult } from "../../reducers/portfolio";
+import { IconButton } from "@mui/material";
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 
-const Search = ({
-  setSearchField,
-  dropDownArray,
-  setSearchColumn,
-  dropDownValues,
-}: SearchProps) => {
+
+const Search = () => {
+  const [searchField, setSearchField] = useState("");
+  const [searchColumn, setSearchColumn] = useState("Name");
+  const dropDownArray = ["Name", "CAGR", "SD"]
+  const [page, setPage] = useState(1); // Track the current page number
+  const searchResult = useSelector((state: State) => state.portfolio.searchResult);
+
+  const prevSearchField = useRef(searchField);
+
+  useEffect(() => {
+    if (searchField !== prevSearchField.current) {
+      // Reset page to 1 when searchField has changed
+      setPage(1);
+      prevSearchField.current = searchField; // Update the reference to the new searchField
+    }
+  
+    if (searchField) {
+      searchStockList(searchColumn, searchField, page) // Use the current page value
+        .then((data) => {
+          if (data.status === "success") {
+            dispatch(setSearchResult(data.data));
+          }
+        });
+    } else {
+      dispatch(setSearchResult([]));
+    }
+  }, [searchField, page]);
+
   const [dropDown, setDropDown] = useState(false);
-  const onFocus = () => setDropDown(true);
-  const onBlur = () =>setTimeout(() => {
-    setDropDown(false)
-  }, 1000);
-  const [searchvalue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState("");
   const portfolioStocks = useSelector(
     (state: State) => state.portfolio.portfolioStocks
   );
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const onFocus = () => setDropDown(true);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setDropDown(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handlePagination = (newPage: number) => {
+    setPage(newPage); // Update the page number
+  };
 
   return (
     <>
-      <div className="search-parent">
+      <div className="search-parent" ref={dropdownRef}>
         <div className="search-child-1">
           <FormControl
             fullWidth
@@ -60,9 +103,8 @@ const Search = ({
                 setSearchField(e.target.value);
                 setSearchValue(e.target.value);
               }}
-              value={searchvalue}
+              value={searchValue}
               onFocus={onFocus}
-              onBlur={onBlur}
               startAdornment={
                 <InputAdornment position="start">
                   <SearchIcon />
@@ -113,59 +155,48 @@ const Search = ({
             />
           </FormControl>
         </div>
-        <div style={{ display: dropDown ? "flex" : "none" }}>
+        {dropDown && searchResult.length!=0 && (
           <div className="search-drop-down">
             <Card sx={{ mb: 2 }}>
               <CardContent>
-                <Typography
-                  variant="caption"
-                  sx={{ paddingBottom: 10, fontSize: 8 }}
-                >
-                  search results
-                </Typography>
-                {dropDownValues?.map((eachValue: any) => (
+                {searchResult?.map((eachValue: any) => (
                   <Box key={eachValue.scripcode} sx={{ mt: 2 }}>
-                       <Grid container sx={{ mb: 1 }}>
+                    <Grid container sx={{ mb: 1 }}>
                       <Grid item xs={6}>
-                      <Typography
-                      variant="body1"
-                      sx={{ textDecoration: "underline", cursor: "pointer" }}
-                      color="primary"
-                      onClick={() => {
-                        navigate("/stock-analysis/" + eachValue.scripcode);
-                      }}
-                    >
-                      {eachValue.Scripname}
-                    </Typography>
+                        <Typography
+                          variant="body1"
+                          sx={{ textDecoration: "underline", cursor: "pointer" }}
+                          color="primary"
+                          onClick={() => {
+                            navigate("/stock-analysis/" + eachValue.scripcode);
+                          }}
+                        >
+                          {eachValue.Scripname}
+                        </Typography>
                       </Grid>
                       <Grid item xs={3}>
-                      {!portfolioStocks.includes(eachValue.scripcode) ? (
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  dispatch(addPortfolioStock(eachValue.scripcode));
-                }}
-              >
-                Add
-              </Button>
-            ) : (
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  dispatch(
-                    removePortfolioStocksData(eachValue.scripcode)
-                  );
-                  dispatch(removePortfolioStock(eachValue.scripcode));
-                }}
-              >
-                Remove
-              </Button>
-            )}
+                        {!portfolioStocks.includes(eachValue.scripcode) ? (
+                          <Button
+                            variant="outlined"
+                            onClick={() => {
+                              dispatch(addPortfolioStock(eachValue.scripcode));
+                            }}
+                          >
+                            Add
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outlined"
+                            onClick={() => {
+                              dispatch(removePortfolioStocksData(eachValue.scripcode));
+                              dispatch(removePortfolioStock(eachValue.scripcode));
+                            }}
+                          >
+                            Remove
+                          </Button>
+                        )}
                       </Grid>
-                      </Grid>
-
-            
-
+                    </Grid>
                     <Typography variant="caption" sx={{ fontSize: 8 }}>
                       {eachValue.scripcode}
                     </Typography>
@@ -188,7 +219,7 @@ const Search = ({
                           {Math.round(
                             (eachValue.dailyStandardDeviation +
                               Number.EPSILON) *
-                              100
+                            100
                           ) / 100}
                         </Typography>
                       </Grid>
@@ -196,18 +227,32 @@ const Search = ({
                     <Divider />
                   </Box>
                 ))}
-              </CardContent>
-              <Divider />
 
-              {/* <div className="advanced-search" onClick={()=>{navigate('/private/advancedSearch')}}>
-        <SearchIcon sx={{ fontSize: "18px"}}/>   
-          <Typography variant="body2" sx={{pl:1}}>
-          Advanced Search
-     </Typography>
-      </div> */}
+                {/* Pagination Controls */}
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                  <IconButton
+                    onClick={() => handlePagination(page - 1)}
+                    disabled={page <= 1}
+                  >
+                    <NavigateBeforeIcon />
+                  </IconButton>
+                  <Typography variant="body2" sx={{ display: "inline", margin:"auto" }}>
+         {page}
+      </Typography>
+                 <IconButton
+                    onClick={() => handlePagination(page + 1)}
+                    disabled={searchResult.length!=10}
+
+                  >
+                    <NavigateNextIcon />
+                  </IconButton>
+
+                </Box>
+              </CardContent>
             </Card>
+
           </div>
-        </div>
+        )}
       </div>
     </>
   );

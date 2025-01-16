@@ -5,23 +5,18 @@ import { useNavigate } from "react-router-dom";
 import { State } from "../../interfaces/store";
 
 import {
-  addPortfolioStock,
-  removePortfolioStock,
   addPortfolioStocksData,
   setPortfolio,
-  setSearchResult,
 } from "../../reducers/portfolio";
-import { generatePF, getSelectedStockData, searchStockList } from "../../services/apis";
+import { generatePF, getSelectedStockData } from "../../services/apis";
 
 import LineChart from "../line-chart/LineChart";
 import { ListPortfolioStock } from "../listPortfolioStock/ListPortfolioStock";
 import Search from "../Search/Search";
+import EmptyPortfolio from "../empty-portfolio/EmptyPortfolio";
 const PortfolioAnalysis: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [searchField, setSearchField] = useState("");
-  const [searchColumn, setSearchColumn] = useState("Name");
-  const [dropDownArray, setDropDownArray] = useState(["Name","CAGR","SD"]);
 
 
   const portfolioStocks = useSelector(
@@ -31,7 +26,6 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
     (state: State) => state.portfolio.portfolioStocksData
   );
   const portfolio = useSelector((state: State) => state.portfolio.portfolio);
-  const searchResult = useSelector((state: State) => state.portfolio.searchResult);
 
 
   useEffect(() => {
@@ -53,13 +47,6 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
       generatePortfolio();
     }
   }, [portfolioStocks]);
-  useEffect(() => {
-    if(searchField&&searchColumn)
-    searchStockList(searchColumn,searchField)
-    .then((data)=>{data.status ==="sucess" && dispatch(setSearchResult(data.data))})
-  }, [searchField,searchColumn]);
-
-
 
   
 
@@ -70,7 +57,7 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
   };
 
   return (
-    <>{  portfolioStocks.length>0 &&  portfolioStocksData.length>0 &&  <Grid
+    <> <Grid
       container
       sx={{
         pb: "1rem",
@@ -81,12 +68,7 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
       }}
     >
       <Grid item xs={3}>
-      <Search
-            dropDownValues={searchResult}
-          setSearchField={setSearchField}
-          dropDownArray={dropDownArray}
-          setSearchColumn={setSearchColumn}
-        ></Search>
+      <Search></Search>
         <Box sx={{ overflow: "auto", height: "76vh",mt:"2vh" }}>
           {portfolioStocksData?.map((eachStock) => {
             return (
@@ -97,22 +79,9 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
             );
           })}
         </Box>
-
-        {/* <Grid container justifyContent="center" sx={{ pt: 5 }}>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              generatePortfolio();
-            }}
-          >
-            {portfolio.stocks.length === 0
-              ? "Generate Portfolio"
-              : "Regenerate Portfolio"}
-          </Button>
-        </Grid> */}
       </Grid>
       <Grid item xs={9}>
-        <Box
+        {  (portfolioStocks.length>0 &&  portfolioStocksData.length>0) ? (<><Box
           position={"absolute"}
           sx={{ ml: 10, mt: 7, height: "10rem", width: "15rem" }}
         >
@@ -153,7 +122,17 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
                     100}
                 </Typography>
               </Grid>
-              
+            </Grid>
+            <Grid container>
+              <Grid item xs={6}>
+                <Typography variant="body1"> GP :</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body1" color="secondary">
+                  {Math.round((portfolio.probability?.P_higher*100 + Number.EPSILON) * 100) /
+                    100}%
+                </Typography>
+              </Grid>
             </Grid>
           </Card>
         </Box>
@@ -161,9 +140,9 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
           lineChartData={portfolioStocksData}
           portfolioData={portfolio}
           isPortfolio={true}
-        />
+        /> </>): <EmptyPortfolio/>}
       </Grid>
-    </Grid>}
+    </Grid>
     </>
 
   );

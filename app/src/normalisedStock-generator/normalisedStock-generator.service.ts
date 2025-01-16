@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+  calculateDifferenceProbabilities,
   dev,
   getMax,
   getMin,
@@ -52,9 +53,22 @@ export class NormalisedStockGeneratorService {
         'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation normalisedData',
       )
       .then((selectedStocks: NormalisedStockDocument[]) => {
-        let portfolio = this.genPortfolio(selectedStocks);
-        portfolio['stocks'] = scripcodeArray;
+        const portfolio = this.genPortfolio(selectedStocks);
+        portfolio.stocks = scripcodeArray;
+      
+        const { dailyMean, Data: data } = portfolio;
+        const growthFactor = 1 + dailyMean / 100;
+        let prev = data[0].portfolioValue;
+        
+        // Generate the Ideal portfolio
+        portfolio.Ideal = data.map((each, index) => {
+          const value = index === 0 ? prev : (prev *= growthFactor);
+          return { value, dttm: each.dttm };
+        });
+        
+        portfolio.probability = calculateDifferenceProbabilities(portfolio.Ideal.map(each=>each.value),portfolio.Data.map(each=>each.portfolioValue))
         return portfolio;
+        
       })
       .catch((err) => {
         console.log(err);
@@ -62,94 +76,71 @@ export class NormalisedStockGeneratorService {
       });
   }
 
-  searchStockList({ searchField, searchType }) {
-    if (searchType === 'Name')
-      return this.NormalisedStockModel.find({
-        Scripname: { $regex: searchField, $options: 'i' },
-      })
-        .limit(10)
-        .select(
-          'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
-        );
-    else if (searchType === 'CAGR' && !isNaN(Number(searchField)))
-      return this.NormalisedStockModel.find({ cagr: { $gt: searchField } })
-        .sort({ dailyStandardDeviation: 1 })
-        .limit(10)
-        .select(
-          'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
-        );
-    else if (searchType === 'SD' && !isNaN(Number(searchField)))
-      return this.NormalisedStockModel.find({
-        dailyStandardDeviation: { $lt: searchField },
-      })
-        .sort({ cagr: -1 })
-        .limit(10)
-        .select(
-          'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
-        );
+// Service Implementation
+searchStockList({ searchField, searchType, page }) {
+  const itemsPerPage = 10; // Number of items per page
+  const skip = (page - 1) * itemsPerPage; // Calculate the number of items to skip
+
+  if (searchType === 'Name') {
+    return this.NormalisedStockModel.find({
+      Scripname: { $regex: searchField, $options: 'i' },
+    })
+      .skip(skip)
+      .limit(itemsPerPage)
+      .select(
+        'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
+      );
+  } else if (searchType === 'CAGR' && !isNaN(Number(searchField))) {
+    return this.NormalisedStockModel.find({ cagr: { $gt: searchField } })
+      .sort({ dailyStandardDeviation: 1 })
+      .skip(skip)
+      .limit(itemsPerPage)
+      .select(
+        'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
+      );
+  } else if (searchType === 'SD' && !isNaN(Number(searchField))) {
+    return this.NormalisedStockModel.find({
+      dailyStandardDeviation: { $lt: searchField },
+    })
+      .sort({ cagr: -1 })
+      .skip(skip)
+      .limit(itemsPerPage)
+      .select(
+        'Scripname scripcode dailyMean dailyStandardDeviation cagr NormalisedDailyMean NormalisedDailyStandardDeviation',
+      );
   }
+}
 
-  createNormalisedStock() {
-    return this.NormalisedStockModel.collection
-      .drop()
-      .then(() => {
-        return this.PortfolioModel.collection.drop();
-      })
-      .then(() => {
-        return this.StockPriceModel.find({})
-          .lean()
-          .then((allData) => {
-            return allData.map((eachData) => {
-              return stockToNormalisedStock(eachData);
-            });
-          })
-          .then((normalisedStockOfOneStock) => {
-            let dailyMeanMin = getMin(normalisedStockOfOneStock, 'dailyMean');
-            let dailyMeanMax = getMax(normalisedStockOfOneStock, 'dailyMean');
-            let dailyStandardDeviationMin = getMin(
-              normalisedStockOfOneStock,
-              'dailyStandardDeviation',
-            );
-            let dailyStandardDeviationMax = getMax(
-              normalisedStockOfOneStock,
-              'dailyStandardDeviation',
-            );
-            return normalisedStockOfOneStock.map(
-              (eachNormalisedStock: NormalisedStockDto) => {
-                eachNormalisedStock.NormalisedDailyMean =
-                  (eachNormalisedStock.dailyMean - dailyMeanMin) /
-                    (dailyMeanMax - dailyMeanMin) +
-                  1;
-                eachNormalisedStock.NormalisedDailyStandardDeviation =
-                  (eachNormalisedStock.dailyStandardDeviation -
-                    dailyStandardDeviationMin) /
-                    (dailyStandardDeviationMax - dailyStandardDeviationMin) +
-                  1;
-                const createdstock = new this.NormalisedStockModel(
-                  eachNormalisedStock,
-                );
-                createdstock.save().catch((err) => {
-                  throw { status: err };
-                });
-                return eachNormalisedStock;
-              },
-            );
-          })
-          .then((normalisedStock) => {
-            return resultValidation(normalisedStock);
-          })
-          .catch((err) => {
-            console.log(err);
-            throw { status: err };
-          });
-      })
+async createNormalisedStock() {
+  try {
+    await this.NormalisedStockModel.collection.drop();
+    await this.PortfolioModel.collection.drop();
 
-      .catch((err) => {
-        console.log(err);
-        return err;
-      });
+    const allData = await this.StockPriceModel.find({}).lean();
+    const normalisedData = allData.map(stockToNormalisedStock);
+    const dailyMeanMin = getMin(normalisedData, 'dailyMean');
+    const dailyMeanMax = getMax(normalisedData, 'dailyMean');
+    const dailyStdDevMin = getMin(normalisedData, 'dailyStandardDeviation');
+    const dailyStdDevMax = getMax(normalisedData, 'dailyStandardDeviation');
+
+    const normalizedStocks = normalisedData.map((stock:NormalisedStockDto) => {
+      stock.NormalisedDailyMean =
+        (stock.dailyMean - dailyMeanMin) / (dailyMeanMax - dailyMeanMin) + 1;
+      stock.NormalisedDailyStandardDeviation =
+        (stock.dailyStandardDeviation - dailyStdDevMin) /
+          (dailyStdDevMax - dailyStdDevMin) +
+        1;
+      return stock;
+    });
+
+    await this.NormalisedStockModel.insertMany(normalizedStocks);
+
+    return resultValidation(normalizedStocks);
+  } catch (err) {
+    console.error('Error:', err);
+    throw err;
   }
-
+}
   analyseDonIntex({
     coefficent = 1,
     pfSize = 20,
@@ -319,11 +310,11 @@ export class NormalisedStockGeneratorService {
       portfolioStocks: arrayForPortfolio,
       Data: portfolioData,
       arrayOfDailyChange: arrayOfDailyChange,
-      dailyMean: dailySum / totalData,
+      dailyMean: dailySum / (totalData-1),
       dailyStandardDeviation: dev(
         arrayOfDailyChange.map((eachData) => eachData.dailyChange),
       ),
-      cagr: (Math.pow(dailySum / totalData / 100 + 1, 365) - 1) * 100,
+      cagr: (Math.pow(dailySum / (totalData-1) / 100 + 1, 365) - 1) * 100,
     };
 
     return portfolio;
@@ -361,11 +352,14 @@ export class NormalisedStockGeneratorService {
     let portfolio = {
       Data: portfolioData,
       arrayOfDailyChange: arrayOfDailyChange,
-      dailyMean: dailySum / totalData,
+      dailyMean: dailySum / (totalData-1),
       dailyStandardDeviation: dev(
         arrayOfDailyChange.map((eachData) => eachData.dailyChange),
       ),
-      cagr: (Math.pow(dailySum / totalData / 100 + 1, 365) - 1) * 100,
+      cagr: (Math.pow(dailySum / (totalData-1) / 100 + 1, 365) - 1) * 100,
+      stocks:[],
+      Ideal:[],
+      probability:{}
     };
 
     return portfolio;

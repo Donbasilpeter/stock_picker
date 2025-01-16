@@ -15,7 +15,7 @@ import {
 } from '@nestjs/swagger';
 import { scripCodes } from 'src/scripcode';
 
-@ApiTags('API for Data Setup') //api tag for swagger documentation
+@ApiTags('API for Data Setup')
 @Controller('stock')
 export class StockController {
   constructor(
@@ -25,14 +25,9 @@ export class StockController {
   ) {}
 
   @Post()
-
-  //swagger config for this api
   @ApiOperation({
-    summary:"This API allows you to reset the entire stock data in the Database. ",
-    description: `
-    Use it carefully! It fetchs data from BSE database and stores those on local database. 
-    Only active stocks data are fetched and stored. You can enter the list of bsecodes in the json input.
-    from those codes actively traded stock data is fetched`,
+    summary: 'This API allows you to reset the entire stock data in the Database.',
+    description: `Use it carefully! It fetches data from BSE database and stores those on local database.`,
   })
   @ApiConsumes('application/json')
   @ApiBody({
@@ -46,7 +41,6 @@ export class StockController {
           example: scripCodes.securityCode,
         },
       },
-
       required: ['scripCodeArray'],
     },
   })
@@ -54,18 +48,8 @@ export class StockController {
     this.StockPriceModel.collection.drop();
     const { paramsArray, fromdate, todate } = setParams(resetStockInput);
     if (fromdate <= todate) {
-      let [count, total] = [0, paramsArray.length];
-      return await Promise.all(
-        paramsArray.map((eachStock, i) => {
-          return this.stockService.createStocks(eachStock).then((data) => {
-            count++;
-            console.log((count * 100) / total + '% completed');
-            return data;
-          });
-        }),
-      ).then((result) => {
-        return resultValidation(result);
-      });
+      await this.stockService.processStocksWithDelay(paramsArray);  // Call the delayed processing
+      return resultValidation(paramsArray);
     } else {
       console.log(DateValidationError);
       return DateValidationError;

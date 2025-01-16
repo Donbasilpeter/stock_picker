@@ -41,8 +41,19 @@ const LineChart = ({
       data: portfolioData.Data.map((data: any) => data.portfolioValue),
       fill: false,
       borderColor: theme.palette.primary.main,
-      backgroundColor: theme.palette.secondary.main,
+      backgroundColor: theme.palette.primary.main,
       color: theme.palette.primary.main,
+      tension: 0.1,
+    });
+
+    const [formattedPortfolioIdealData, setFormattedPortfolioIdealData] =
+    useState<DataSetInterface>({
+      label: "IDEAL",
+      data: portfolioData.Ideal.map((data: any) => data.value),
+      fill: false,
+      borderColor: theme.palette.secondary.main,
+      backgroundColor: theme.palette.secondary.main,
+      color: theme.palette.secondary.main,
       tension: 0.1,
     });
 
@@ -63,13 +74,14 @@ const LineChart = ({
                 lineChartData.length === 1 ? theme.palette.primary.main : color,
               backgroundColor:
                 lineChartData.length === 1
-                  ? theme.palette.secondary.main
+                  ? theme.palette.primary.main
                   : color,
 
               color:
                 lineChartData.length === 1 ? theme.palette.primary.main : color,
 
               tension: 0.1,
+              hidden: lineChartData.length!=1 ,
             };
           })
         : [];
@@ -82,13 +94,25 @@ const LineChart = ({
       data: portfolioData.Data.map((data: any) => data.portfolioValue),
       fill: false,
       borderColor: theme.palette.primary.main,
-      backgroundColor: theme.palette.secondary.main,
+      backgroundColor: theme.palette.primary.main,
       color: theme.palette.primary.main,
       tension: 0.1,
       borderWidth: 1,
 
     };
     setFormattedPortfolioData(portfolio);
+    const ideal = {
+      label: "IDEAL",
+      data: portfolioData.Ideal.map((data: any) => data.value),
+      fill: false,
+      borderColor: theme.palette.secondary.main,
+      backgroundColor: theme.palette.secondary.main,
+      color: theme.palette.secondary.main,
+      tension: 0.1,
+      borderWidth: 1,
+
+    };
+    setFormattedPortfolioIdealData(ideal);
   }, [portfolioData]);
 
   const options: any = {
@@ -118,14 +142,12 @@ const LineChart = ({
           pinch: {
             enabled: true,
           },
-          mode: "xy",
-          limits: {
-            y: { max: 1000 },
-          },
+          mode: "x",
+
         },
         pan: {
           enabled: true,
-          mode: "xy",
+          mode: "x",
         },
       },
     },
@@ -133,7 +155,7 @@ const LineChart = ({
 
   const data = {
     labels: lineChartData[0]?.normalisedData?.map((data: any) => data.dttm),
-    datasets: formattedPortfolioData.data.length>0 && isPortfolio? [...formattedLineChartData,formattedPortfolioData ] : formattedLineChartData
+    datasets: formattedPortfolioData.data.length>0 && isPortfolio? [...formattedLineChartData,formattedPortfolioData,formattedPortfolioIdealData ] : formattedLineChartData
   };
   return <Line options={options} data={data} />;
 };
