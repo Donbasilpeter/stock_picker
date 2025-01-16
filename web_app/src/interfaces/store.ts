@@ -49,6 +49,8 @@ export interface Portfolio {
   dailyMean: number;
   dailyStandardDeviation: number;
   cagr: number;
-  stocks:number[]
-  Ideal:any[]
+  stocks:number[],
+  Ideal:any[],
+  probability:any,
 }
+

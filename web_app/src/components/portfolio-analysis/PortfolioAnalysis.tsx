@@ -122,7 +122,17 @@ const PortfolioAnalysis: React.FunctionComponent = () => {
                     100}
                 </Typography>
               </Grid>
-              
+            </Grid>
+            <Grid container>
+              <Grid item xs={6}>
+                <Typography variant="body1"> GP :</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body1" color="secondary">
+                  {Math.round((portfolio.probability?.P_higher*100 + Number.EPSILON) * 100) /
+                    100}%
+                </Typography>
+              </Grid>
             </Grid>
           </Card>
         </Box>

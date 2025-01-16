@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+  calculateDifferenceProbabilities,
   dev,
   getMax,
   getMin,
@@ -53,17 +54,21 @@ export class NormalisedStockGeneratorService {
       )
       .then((selectedStocks: NormalisedStockDocument[]) => {
         const portfolio = this.genPortfolio(selectedStocks);
-        portfolio["stocks"] = scripcodeArray;
+        portfolio.stocks = scripcodeArray;
       
         const { dailyMean, Data: data } = portfolio;
         const growthFactor = 1 + dailyMean / 100;
         let prev = data[0].portfolioValue;
-      
-        portfolio["Ideal"] = data.map((each, index) => {
+        
+        // Generate the Ideal portfolio
+        portfolio.Ideal = data.map((each, index) => {
           const value = index === 0 ? prev : (prev *= growthFactor);
           return { value, dttm: each.dttm };
         });
+        
+        portfolio.probability = calculateDifferenceProbabilities(portfolio.Ideal.map(each=>each.value),portfolio.Data.map(each=>each.portfolioValue))
         return portfolio;
+        
       })
       .catch((err) => {
         console.log(err);
@@ -352,6 +357,9 @@ async createNormalisedStock() {
         arrayOfDailyChange.map((eachData) => eachData.dailyChange),
       ),
       cagr: (Math.pow(dailySum / (totalData-1) / 100 + 1, 365) - 1) * 100,
+      stocks:[],
+      Ideal:[],
+      probability:{}
     };
 
     return portfolio;

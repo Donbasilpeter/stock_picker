@@ -10,7 +10,11 @@ const initialState: PortfolioReducer = {
     dailyStandardDeviation: 0,
     cagr: 0,
     stocks: [],
-    Ideal:[]
+    Ideal:[],
+    probability:{
+      P_higher:0,
+      P_lower:0
+     }
   },
   searchResult: [],
 };

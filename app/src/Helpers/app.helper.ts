@@ -165,3 +165,49 @@ export function getMin(data, key) {
 export function getMax(data, key) {
   return data.reduce((max, p) => (p[key] > max ? p[key] : max), data[0][key]);
 }
+
+/**
+ * Calculate the probabilities of higher or lower differences
+ * @param {Array<number>} idealArray - Array of ideal values
+ * @param {Array<number>} actualArray - Array of actual values
+ * @returns {Object} - Probabilities of going higher or lower
+ */
+export function calculateDifferenceProbabilities(idealArray, actualArray) {
+  if (idealArray.length !== actualArray.length) {
+    throw new Error("Both arrays must have the same length.");
+  }
+
+  const n = idealArray.length;
+
+  if (n === 0) {
+    throw new Error("Arrays cannot be empty.");
+  }
+
+  // Step 1: Calculate the last difference
+  const lastDifference = (actualArray[n - 1] - idealArray[n - 1]) / idealArray[n - 1];
+
+  // Step 2: Initialize counters for values higher and lower than the last difference
+  let higherCount = 0;
+  let lowerCount = 0;
+
+  // Step 3: Iterate and count directly
+  for (let i = 0; i < n; i++) {
+    if (idealArray[i] === 0) {
+      throw new Error("Ideal array values cannot be zero.");
+    }
+
+    const diff = (actualArray[i] - idealArray[i]) / idealArray[i];
+
+    if (diff > lastDifference) {
+      higherCount++;
+    } else if (diff < lastDifference) {
+      lowerCount++;
+    }
+  }
+
+  // Step 4: Calculate probabilities
+  const P_higher = higherCount / n;
+  const P_lower = lowerCount / n;
+
+  return { P_higher, P_lower };
+}
