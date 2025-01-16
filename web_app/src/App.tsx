@@ -16,10 +16,16 @@ import PortfolioAnalysis from "./components/portfolio-analysis/PortfolioAnalysis
 let theme = createTheme({
   palette: {
     primary: {
-      main: "#F55050",
+      main: '#0088c2', // Main color for primary
+      light: '#00adc1', // Optional light shade
+      dark: '#2660a4', // Optional dark shade
+      contrastText: '#ffffff', // Text color on primary
     },
     secondary: {
-      main: "#F48484",
+      main: '#88416b',
+      light: '#d87289',
+      dark: '#9e3e57',
+      contrastText: '#ffffff',
     },
   },
   typography: {

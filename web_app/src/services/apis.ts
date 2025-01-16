@@ -28,12 +28,12 @@ export const  getSelectedStockData = (selectedStock:number)=>{
     
     }
 
-    export const  searchStockList = (searchType: string,searchField:number|string)=>{
+    export const  searchStockList = (searchType: string,searchField:number|string,page:number)=>{
         const url = STOCK_PICKER_API + "/normalisedStock/search-stock-list"
-        const data = {searchType: searchType,searchField:searchField}
+        const data = {searchType: searchType,searchField:searchField,page:page}
         return axios.get(url,{params:data}).then((data:any)=>{
             if(data.data[0]){
-                return {status:"sucess", data: data.data}
+                return {status:"success", data: data.data}
             }
             else{
                 return {status:"error"}
