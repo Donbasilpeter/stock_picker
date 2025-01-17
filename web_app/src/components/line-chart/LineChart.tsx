@@ -16,6 +16,7 @@ import {
 import { Box, Grid, useTheme } from "@mui/material";
 import { SelectedStockData } from "../../interfaces/store";
 import { useEffect, useState } from "react";
+import moment from 'moment'
 ChartJS.register(
   LinearScale,
   PointElement,
@@ -154,7 +155,7 @@ const LineChart = ({
   };
 
   const data = {
-    labels: lineChartData[0]?.normalisedData?.map((data: any) => data.dttm),
+    labels: lineChartData[0]?.normalisedData?.map((data: any) => moment(data.dttm).format('YYYY-MM-DD')),
     datasets: formattedPortfolioData.data.length>0 && isPortfolio? [...formattedLineChartData,formattedPortfolioData,formattedPortfolioIdealData ] : formattedLineChartData
   };
   return <Line options={options} data={data} />;
