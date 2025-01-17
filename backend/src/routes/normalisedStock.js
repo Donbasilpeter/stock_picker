@@ -1,9 +1,9 @@
 import express from 'express';
-import { resetAllstocks } from '../controllers/stockController.js';
+import { create } from '../controllers/normaliseStockController.js';
 
 const router = express.Router();
 
 // User registration
-router.get('/stock', resetAllstocks);
+router.post('/normalise-stocks', create);
 
 export default router;
