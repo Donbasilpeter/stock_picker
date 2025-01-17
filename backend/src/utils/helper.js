@@ -199,3 +199,50 @@ export function calculateDifferenceProbabilities(idealArray, actualArray) {
 
   return { P_higher, P_lower };
 }
+
+
+export const genPortfolio = (arrayForPortfolio)=> {
+  let portfolioData = [];
+  let totalData = arrayForPortfolio[0].normalisedData.length;
+  let pfSize = arrayForPortfolio.length;
+  for (let i = 0; i < totalData; i++) {
+    let currentDateNormalisedDataSum = 0;
+    for (let j = 0; j < pfSize; j++) {
+      currentDateNormalisedDataSum +=
+        arrayForPortfolio[j].normalisedData[i].normalisedData;
+    }
+    portfolioData.push({
+      portfolioValue: currentDateNormalisedDataSum / pfSize,
+      dttm: arrayForPortfolio[0].normalisedData[i].dttm,
+    });
+  }
+
+  let dailySum = 0;
+  let arrayOfDailyChange = [];
+  for (let i = 1; i < portfolioData.length; i++) {
+    let dailyChange =
+      ((portfolioData[i].portfolioValue -
+        portfolioData[i - 1].portfolioValue) *
+        100) /
+      portfolioData[i - 1].portfolioValue;
+    dailySum = dailySum + dailyChange;
+    arrayOfDailyChange.push({
+      dttm: portfolioData[i].dttm,
+      dailyChange: dailyChange,
+    });
+  }
+  let portfolio = {
+    Data: portfolioData,
+    arrayOfDailyChange: arrayOfDailyChange,
+    dailyMean: dailySum / (totalData-1),
+    dailyStandardDeviation: dev(
+      arrayOfDailyChange.map((eachData) => eachData.dailyChange),
+    ),
+    cagr: (Math.pow(dailySum / (totalData-1) / 100 + 1, 365) - 1) * 100,
+    stocks:[],
+    Ideal:[],
+    probability:{}
+  };
+
+  return portfolio;
+}
