@@ -9,7 +9,7 @@ services:
   api-server:
     build: ./backend
     ports: 
-      - "3000:3000"
+      - "8000:8000"
     networks:
       - mern-app
 networks:
