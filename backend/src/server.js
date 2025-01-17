@@ -6,17 +6,11 @@ import authRoutes from './routes/authRoutes.js';
 import stockRoutes from './routes/stockRoutes.js'
 import normalisedStockRoutes from './routes/normalisedStockRoutes.js'
 import portfolioRoutes from './routes/portfolioRoutes.js'
-
 import initializeDatabase from './config/db.js';
 
-
-
 const app = express();
-const port = 8000;
 
 initializeDatabase()
-
-
 
 app.use(createCorsMiddleware(process.env.CORS_ORIGIN)); // CORS middleware
 
@@ -28,12 +22,6 @@ app.use('/', stockRoutes);
 app.use('/normalisedStock', normalisedStockRoutes); 
 app.use('/normalisedStock', portfolioRoutes); 
 
-
-
-
-
-
-
-app.listen(port, () => {
+app.listen(process.env.PORT, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
